@@ -1,0 +1,69 @@
+<% title "Check Token" %>
+
+<%= form_for(resource, :as => resource_name, :url => [resource_name, :otp_credential], :html => { :method => :put, class: "card", data: { turbo: "false", controller: "otp", "otp-code-length-value": 6 } }) do |f| %>
+  <div class="card__header">
+    <h1 class="heading-1"><%= I18n.t('title', :scope => 'devise.otp.submit_token') %></h1>
+    <p class="subtitle"><%= I18n.t('explain', :scope => 'devise.otp.submit_token') %></p>
+  </div>
+  <div class="card__body">
+    <% if @recovery %>
+      <div class="field'">
+        <%= f.label :token, I18n.t('recovery_prompt', :scope => 'devise.otp.submit_token'), class: "label" %>
+        <div class="otp-container">
+          <% (1..6).each do |idx| %>
+            <input
+              type="text"
+              maxlength="1"
+              id="otp-digit-<%= idx %>"
+              data-otp-target="otpField"
+              <%= "autofocus" if idx == 1 %>
+              data-action="keydown->otp#handleKeyDown keyup->otp#handleKeyUp input->otp#handleInput"/>
+          <% end %>
+        </div>
+        <%= f.hidden_field :otp_recovery_counter, :value => "", "data-otp-target": "tokenField" %>
+      </div>
+    <% else %>
+      <div class="field">
+        <%= f.label :token, I18n.t('prompt', :scope => 'devise.otp.submit_token'), class: "label" %>
+        <div class="otp-container">
+          <% (1..6).each do |idx| %>
+            <input
+              type="text"
+              maxlength="1"
+              id="otp-digit-<%= idx %>"
+              data-otp-target="otpField"
+              <%= "autofocus" if idx == 1 %>
+              data-action="keydown->otp#handleKeyDown keyup->otp#handleKeyUp input->otp#handleInput"/>
+          <% end %>
+        </div>
+        <%= f.hidden_field :token, :value => "", "data-otp-target": "tokenField" %>
+      </div>
+    <% end %>
+    <div class="relative-box">
+      <div data-controller="accordion" class="accordion">
+        <button type="button" data-action="click->accordion#toggle" class="accordion__toggle">
+          <i data-accordion-target="arrow" class="fa-sharp fa-light fa-chevron-right fa-xs accordion__arrow"></i>
+          <span class="body-1">Need Help?</span>
+        </button>
+        <ul data-accordion-target="content" class="accordion__content accordion__content--list">
+          <li><%= link_to I18n.t('recovery_link', :scope => 'devise.otp.submit_token'), otp_credential_path_for(resource_name, :challenge => @challenge, :recovery => true), class: "link" %></li>
+        </ul>
+      </div>
+      <% if devise_mapping.rememberable? %>
+        <div class="relative-box__top-right">
+          <%= label_tag :enable_persistence, class: "checkbox" do %>
+            <%= check_box_tag :enable_persistence, true, false %> <%= I18n.t('remember', :scope => 'devise.otp.general') %>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+    <%= f.hidden_field :challenge, { :value => @challenge } %>
+    <%= f.hidden_field :recovery, { :value => @recovery } %>
+  </div>
+
+  <div class="card__footer card__footer--column">
+    <%= f.submit I18n.t('submit', :scope => 'devise.otp.submit_token'), class: "button button--full", "data-turbo-submits-with": "Submitting.." %>
+    <div class="separator separator--has-text" data-text="New to Ruby?"></div>
+    <%= link_to "Sign Up", new_registration_path(resource_name), class: "button button--outline button--full" %>
+  </div>
+<% end %>

@@ -1,0 +1,73 @@
+<% title "Sign In" %>
+
+<%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: "card", "data-turbo": false }) do |f| %>
+  <div class="card__header">
+    <h1 class="heading-1">Sign In</h1>
+  </div>
+  <div data-controller="passwords" class="card__body">
+    <div class="field">
+      <%= f.label :email, "Email", class: "label" %>
+      <%= f.email_field :email, autofocus: true, autocomplete: "email", placeholder: "johndoe@email.com", class: "input" %>
+    </div>
+    <div class="field">
+      <%= f.label :password, "Password", class: "label" %>
+      <div class="input-wrapper">
+        <%= f.password_field :password, autocomplete: "new-password", class: "input", "data-passwords-target": "password" %>
+        <button tabindex="-1" data-action="click->passwords#toggle" type="button" class="input-wrapper__icon input-wrapper__icon--right">
+          <i data-passwords-target="toggle" class="fa-sharp fa-light fa-eye"></i>
+        </button>
+      </div>
+      <% if @minimum_password_length && resource.errors[:password].blank? %>
+        <em class="field__description">(<%= @minimum_password_length %> characters minimum)</em>
+      <% end %>
+    </div>
+
+    <div class="relative-box">
+      <div data-controller="accordion" class="accordion">
+        <button type="button" data-action="click->accordion#toggle" class="accordion__toggle">
+          <i data-accordion-target="arrow" class="fa-sharp fa-light fa-chevron-right fa-xs accordion__arrow"></i>
+          <span class="body-1">Need Help?</span>
+        </button>
+        <ul data-accordion-target="content" class="accordion__content accordion__content--list">
+          <li><%= link_to "Forgot your password?", new_password_path(resource_name), class: "link" %></li>
+          <li><%= link_to "Didn't receive confirmation instructions?", new_confirmation_path(resource_name), class: "link" %></li>
+          <li>
+            <%- if devise_mapping.lockable? && resource_class.unlock_strategy_enabled?(:email) && controller_name != "unlocks" %>
+              <%= link_to "Didn't receive unlock instructions?", new_unlock_path(resource_name), class: "link" %>
+            <% end %>
+          </li>
+        </ul>
+      </div>
+      <% if devise_mapping.rememberable? %>
+        <div class="relative-box__top-right">
+          <%= f.label :remember_me, class: "checkbox" do %>
+            <%= f.check_box :remember_me %>
+            Remember me
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+  <div class="card__footer card__footer--column">
+    <%= f.submit "Login", class: "button button--full" %>
+    <div class="separator separator--has-text" data-text="New to Ruby?"></div>
+    <%= link_to "Sign Up", new_registration_path(resource_name), class: "button button--outline button--full" %>
+  </div>
+<% end %>
+
+<% if Rails.env.development? %>
+  <%= form_tag accounts_sign_in_as_path, { "data-turbo": false, class: "card sign-in-as" } do %>
+    <div class="card__header">
+      <h2 class="heading-1">Sign in as another user</h2>
+    </div>
+    <div class="card__body">
+      <div class="field">
+        <%= label_tag :email, "Email", class: "label" %>
+        <%= select_tag :email, options_for_select(User.all.map { |u| [u.name, u.email] }), class: "select" %>
+      </div>
+    </div>
+    <div class="card__footer">
+      <%= submit_tag "Impersonate", class: "button button--full" %>
+    </div>
+  <% end %>
+<% end %>

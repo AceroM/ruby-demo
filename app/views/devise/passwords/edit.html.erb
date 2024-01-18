@@ -1,0 +1,32 @@
+<% title "Change your password" %>
+
+<%= form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :put, class: "card" }) do |f| %>
+  <%= f.hidden_field :reset_password_token %>
+
+  <div class="card__header">
+    <h2 class="heading-1">Change Your Password</h2>
+  </div>
+
+  <div data-controller="passwords" class="card__body">
+    <div class="field">
+      <%= f.label :password, "New Password", class: "label" %>
+      <div class="input-wrapper">
+        <%= f.password_field :password, autofocus: true, autocomplete: "new-password", class: "input", "data-passwords-target": "password" %>
+        <button tabindex="-1" data-action="click->passwords#toggle" type="button" class="input-wrapper__icon input-wrapper__icon--right">
+          <i data-passwords-target="toggle" class="fa-sharp fa-light fa-eye"></i>
+        </button>
+      </div>
+      <% if @minimum_password_length %>
+        <em class="field__description">(<%= @minimum_password_length %> characters minimum)</em>
+      <% end %>
+    </div>
+    <div class="field">
+      <%= f.label :password_confirmation, "Confirm New Password", class: "label" %>
+      <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "input" %>
+    </div>
+  </div>
+
+  <div class="card__footer">
+    <%= f.submit "Confirm", class: "button button--full" %>
+  </div>
+<% end %>

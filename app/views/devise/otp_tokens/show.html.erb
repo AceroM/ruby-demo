@@ -1,0 +1,20 @@
+<% title "Two Factor Authentication" %>
+
+<div class="content-grid">
+  <div class="header">
+    <h1 class="heading-1">Setup Two Factor Authentication</h1>
+  </div>
+  <%= render partial: "settings/tabs" %>
+  <div class="content-grid__content two-factor">
+    <p><%= I18n.t('explain', :scope => 'devise.otp.otp_tokens') %></p>
+    <%= form_for(resource, :as => resource_name, :url => [resource_name, :otp_token], :html => { :method => :put, "data-turbo" => false }) do |f| %>
+      <%= render "devise/shared/error_messages", resource: resource %>
+      <h3 class="heading-3"><%= I18n.t('enable_request', :scope => 'devise.otp.otp_tokens') %></h3>
+      <%= f.submit I18n.t('submit', :scope => 'devise.otp.otp_tokens'), class: "button button--outline", style: "margin-top: 0.5rem;" %>
+    <% end %>
+    <%- if resource.otp_enabled? %>
+      <%= render :partial => 'token_secret' if resource.otp_enabled? %>
+      <%= render :partial => 'trusted_devices' if trusted_devices_enabled? %>
+    <% end %>
+  </div>
+</div>

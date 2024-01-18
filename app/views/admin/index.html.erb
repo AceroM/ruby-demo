@@ -1,0 +1,87 @@
+<% title "Admin UI" %>
+
+<% @users.each do |user| %>
+  <%= turbo_stream_from user %>
+<% end %>
+
+<div class="container container--admin">
+  <div class="content-grid admin-home">
+    <div class="header">
+      <%= render partial: "tabs" %>
+      <div data-controller="dropdown" data-dropdown-placement-value="bottom-end">
+        <button data-dropdown-target="reference" data-action="dropdown#toggle click@window->dropdown#hide" class="avatar">
+          <%= Current.user.name[0..1].upcase %>
+        </button>
+        <div data-dropdown-target="floating" class="d-none">
+          <button data-dropdown-target="item" class="dropdown-item">Logout</button>
+        </div>
+      </div>
+    </div>
+    <h1 class="heading-1">Welcome, <%= Current.user.name %></h1>
+    <div class="admin-home__actions">
+      <h2 class="heading-2">Actions</h2>
+      <div>
+        <div data-controller="dialog">
+          <button data-action="dialog#open" class="button button--outline">
+            <i class="fa-sm fa-light fa-user"></i>
+            Sign in as
+          </button>
+          <%= form_tag accounts_sign_in_as_path, { data: { turbo: false, "dialog-target": "content" }, class: "d-none dialog" } do %>
+            <button class="dialog__close" data-action="click->dialog#close">
+              <i class="fa-sm fa-light fa-times"></i>
+            </button>
+            <div class="dialog__header">
+              <h2 class="heading-2">Sign in as another user</h2>
+            </div>
+            <div class="dialog__body">
+              <div class="field">
+                <%= label_tag :email, "Email", class: "label" %>
+                <%= select_tag :email, options_for_select(User.all.map { |u| [u.name, u.email] }), "data-dialog-target": "focus", class: "select" %>
+              </div>
+            </div>
+            <div class="dialog__footer">
+              <button data-action="click->dialog#close" class="button button--outline">Cancel</button>
+              <%= submit_tag "Impersonate", "data-action": "click->dialog#close", class: "button" %>
+            </div>
+          <% end %>
+          <div data-dialog-target="overlay" data-action="click->dialog#close" class="d-none dialog-overlay"></div>
+        </div>
+      </div>
+    </div>
+    <div class="content-grid__search">
+      <h2 class="heading-2">Users</h2>
+      <%= form_tag admin_index_path, method: :get, class: "content-grid__search search" do %>
+        <%= text_field_tag "query", nil, placeholder: "Search transactions..", class: "input search__input" %>
+        <%= submit_tag "Search ", class: "button button--outline search__button", name: nil %>
+      <% end %>
+    </div>
+    <div class="table-wrapper content-grid__table">
+      <table class="table">
+        <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Created</th>
+          <th>Confirmed</th>
+          <th>Admin</th>
+          <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        <% if @users.empty? %>
+          <tr>
+            <td colspan="5" class="table__empty-cell">No users found</td>
+          </tr>
+        <% else %>
+          <%= render partial: "admin/users/user", collection: @users %>
+        <% end %>
+        </tbody>
+      </table>
+    </div>
+    <div class="footer">
+      <%= pagy_info(@pagy, item_name: "users").html_safe %>
+      <%= pagy_nav(@pagy).html_safe if @pagy.pages > 1 %>
+    </div>
+  </div>
+</div>

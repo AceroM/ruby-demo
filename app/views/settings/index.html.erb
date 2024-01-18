@@ -1,0 +1,76 @@
+<div class="content-grid">
+  <h1 class="heading-1">Settings</h1>
+  <%= render partial: "tabs" %>
+  <div class="content-grid__content">
+    <%= form_tag do %>
+      <div class="field-row">
+        <div class="field">
+          <%= label_tag :email, nil, class: "label" %>
+          <div class="input-wrapper">
+            <%= text_field_tag :email, Current.user.email, class: "input" %>
+            <button class="input-wrapper__icon input-wrapper__icon--right">
+              <i class="fa-sharp fa-light fa-pen-to-square"></i>
+            </button>
+          </div>
+        </div>
+        <div class="field">
+          <%= label_tag :name, nil, class: "label" %>
+          <div class="input-wrapper">
+            <%= text_field_tag :name, Current.user.name, class: "input" %>
+            <button class="input-wrapper__icon input-wrapper__icon--right">
+              <i class="fa-sharp fa-light fa-pen-to-square"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+    <% end %>
+    <div class="create-password">
+      <div class="create-password__form">
+        <h2 class="heading-2">Create a new password</h2>
+        <%= form_with model: Current.user, url: account_password_path, local: true, method: "put", "data-controller": "passwords" do |f| %>
+          <div class="field">
+            <%= f.label :current_password, "Current Password", class: "label" %>
+            <div class="input-wrapper">
+              <%= f.password_field :current_password, class: "input", "data-passwords-target": "currentPassword" %>
+              <button tabindex="-1" data-action="click->passwords#toggle" type="button" class="input-wrapper__icon input-wrapper__icon--right">
+                <i data-passwords-target="toggle" class="fa-sharp fa-light fa-eye"></i>
+              </button>
+            </div>
+          </div>
+          <div class="field">
+            <%= f.label :password, "Password", class: "label" %>
+            <div class="input-wrapper">
+              <%= f.password_field :password, class: "input", "data-passwords-target": "password" %>
+              <button tabindex="-1" data-action="click->passwords#toggle" type="button" class="input-wrapper__icon input-wrapper__icon--right">
+                <i data-passwords-target="toggle" class="fa-sharp fa-light fa-eye"></i>
+              </button>
+            </div>
+          </div>
+          <div class="field">
+            <%= f.label :password_confirmation, "Password Confirmation", class: "label" %>
+            <div class="input-wrapper">
+              <%= f.password_field :password_confirmation, class: "input", "data-passwords-target": "passwordConfirmation" %>
+              <button tabindex="-1" data-action="click->passwords#toggle" type="button" class="input-wrapper__icon input-wrapper__icon--right">
+                <i data-passwords-target="toggle" class="fa-sharp fa-light fa-eye"></i>
+              </button>
+            </div>
+          </div>
+          <div class="create-password__submit">
+            <%= f.submit "Update Password", class: "button button--pad-sm" %>
+          </div>
+        <% end %>
+
+      </div>
+      <div class="create-password__requirements card card--padding card--spaced">
+        <p class="bold">Password Requirements</p>
+        <p class="body-1">To create a new password, you have to meet all of the following requirements:</p>
+        <ul class="list">
+          <li>Minimum 6 character</li>
+          <li>At least one special character</li>
+          <li>At least one number</li>
+          <li>Can’t be the same as a previous password</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,20 @@
+<% title "Resend Confirmation Instructions" %>
+
+<%= form_for(resource, as: resource_name, url: confirmation_path(resource_name), html: { method: :post, class: "card" }) do |f| %>
+  <div class="card__header">
+    <h1 class="heading-1">Resend Confirmation</h1>
+    <p class="subtitle">Please enter the email that you would like confirmation instructions to be sent to</p>
+  </div>
+
+  <div class="card__body">
+    <%= link_to new_session_path(resource_name), class: "back-button" do %>
+      <i class="fas fa-light fa-chevron-left fa-sm"></i>Go Back
+    <% end %>
+    <div class="field">
+      <%= f.label :email, "Email", class: "label" %>
+      <%= f.email_field :email, autofocus: true, autocomplete: "email", value: (resource.pending_reconfirmation? ? resource.unconfirmed_email : resource.email), placeholder: "johndoe@email.com", class: "input" %>
+    </div>
+    <%= f.submit "Send", class: "button button--full" %>
+  </div>
+<% end %>
+

@@ -1,0 +1,19 @@
+<%= form_for(resource, :as => resource_name, :url => [:refresh, resource_name, :otp_credential], :html => { :method => :put, "data-turbo" => false, class: "card" }) do |f| %>
+  <div class="card__header">
+    <h1 class="heading-1"><%= I18n.t('title', :scope => 'devise.otp.credentials_refresh') %></h1>
+    <p class="subtitle"><%= I18n.t('explain', :scope => 'devise.otp.credentials_refresh') %></p>
+  </div>
+
+  <div class="card__body">
+    <div class="field">
+      <%= f.label :email, class: "label" %>
+      <%= f.text_field :email, :disabled => :true, class: "input" %>
+    </div>
+    <div class="field">
+      <%= f.label :password, class: "label" %>
+      <%= f.password_field :refresh_password, :autocomplete => :off, :autofocus => true, class: "input" %>
+    </div>
+  </div>
+
+  <div class="card__footer"><%= f.submit I18n.t(:go_on, :scope => 'devise.otp.credentials_refresh'), class: "button button--full" %></div>
+<% end %>

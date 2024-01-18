@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title><%= content_for?(:title) ? yield(:title) : "Ruby Onboarding" %></title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+
+  <%= stylesheet_link_tag "resets", "data-turbo-track": "reload" %>
+  <%= stylesheet_link_tag "globals", "data-turbo-track": "reload" %>
+  <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+  <%= javascript_importmap_tags %>
+</head>
+
+<body class="container container--onboarding">
+<div class="content-grid content-grid--onboarding content-grid--flash">
+  <%= render "shared/flash" %>
+</div>
+<div class="content-grid content-grid--onboarding">
+  <header class="header">
+    <h2 class="heading-1">Ruby</h2>
+    <div data-dropdown-target="floating" class="d-none">
+      <span class="dropdown-label"><%= Current.user.name %></span>
+      <div role="separator" aria-orientation="horizontal" class="dropdown-separator"></div>
+      <%= link_to settings_path, class: "dropdown-item", "data-dropdown-target": "item" do %>
+        <i class="fa-light fa-cog fa-sm"></i>Settings
+      <% end %>
+      <%= link_to destroy_user_session_path, method: :delete, class: "dropdown-item", data: { "dropdown-target": "item", turbo_method: :delete } do %>
+        <i class="fa-light fa-sign-out fa-sm"></i>Logout
+      <% end %>
+      <% if Current.user.admin? %>
+        <%= link_to stop_impersonating_admin_users_path, method: :post, class: "dropdown-item", "data-dropdown-target": "item" do %>
+          <i class="fa-light fa-mask fa-sm"></i><span>Stop Impersonating</span>
+        <% end %>
+      <% end %>
+    </div>
+  </header>
+  <main class="content-grid__content">
+    <%= yield %>
+  </main>
+</div>
+<%= render "shared/font_awesome" %>
+</body>
+</html>

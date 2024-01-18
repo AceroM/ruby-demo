@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title><%= content_for?(:title) ? yield(:title) : "Ruby" %></title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+
+  <%= stylesheet_link_tag "resets", "data-turbo-track": "reload" %>
+  <%= stylesheet_link_tag "globals", "data-turbo-track": "reload" %>
+  <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+  <%= javascript_include_tag "qrcode.js", "data-turbo-track": "reload", defer: false if controller_name.include?("otp_tokens") %>
+  <%= javascript_importmap_tags %>
+</head>
+
+<body class="container container--app">
+<aside class="sidebar">
+  <div>
+    <div class="sidebar__header">
+      <h2 class="heading-2">Ruby</h2>
+    </div>
+    <ul class="sidebar__nav">
+      <li><%= dashboard_link "Home", [dashboard_path] %></li>
+      <li><%= dashboard_link "Settings", [settings_path, user_otp_token_path], "cog" %></li>
+    </ul>
+  </div>
+  <div data-controller="dropdown" data-dropdown-placement-value="top-start" class="sidebar__footer">
+    <button data-dropdown-target="reference" data-action="dropdown#toggle click@window->dropdown#hide" class="sidebar__profile-dropdown">
+      <span class="sidebar__profile-text"><%= Current.user.email %></span>
+      <i class="fa-light fa-chevron-down fa-sm"></i>
+    </button>
+    <div data-dropdown-target="floating" class="d-none">
+      <button data-dropdown-target="item" class="dropdown-item">
+        <span><%= Current.user.email %></span>
+      </button>
+    </div>
+  </div>
+</aside>
+<div class="content content--dashboard">
+  <div class="sticky-header">
+    <div class="content-grid content-grid--header content-grid--full">
+      <header class="header">
+        <div class="header__search">
+          <i class="fa-light fa-search fa-sm"></i>
+          <p>Search</p>
+        </div>
+        <div class="header__profile">
+          <div data-controller="popover" data-popover-placement-value="bottom-end">
+            <button data-popover-target="reference" data-action="popover#toggle click@window->popover#hide" class="header__bell">
+              <i class="fa-light fa-bell fa-lg"></i>
+            </button>
+            <div data-popover-target="floating" class="d-none header__notifications">
+              <p class="subtitle">Notifications</p>
+            </div>
+          </div>
+          <div data-controller="dropdown">
+            <button data-dropdown-target="reference" data-action="click->dropdown#toggle click@window->dropdown#hide" class="avatar">
+              <%= Current.user.name[0..1].upcase %>
+            </button>
+            <div data-dropdown-target="floating" class="d-none">
+              <span class="dropdown-label"><%= Current.user.name %></span>
+              <%= link_to settings_path, class: "dropdown-item", "data-dropdown-target": "item" do %>
+                <i class="fa-light fa-cog fa-sm"></i>Settings
+              <% end %>
+              <%= link_to destroy_user_session_path, method: :delete, class: "dropdown-item", data: { "dropdown-target": "item", turbo_method: :delete } do %>
+                <i class="fa-light fa-sign-out fa-sm"></i>Logout
+              <% end %>
+              <% if Current.user.admin? %>
+                <%= link_to stop_impersonating_admin_users_path, method: :post, class: "dropdown-item", "data-dropdown-target": "item" do %>
+                  <i class="fa-light fa-mask fa-sm"></i><span>Stop Impersonating</span>
+                <% end %>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </header>
+    </div>
+  </div>
+  <div class="content-grid--flash content-grid">
+    <%= render "shared/flash" %>
+  </div>
+  <%= yield %>
+</div>
+<%= render "shared/font_awesome" %>
+</body>
+</html>

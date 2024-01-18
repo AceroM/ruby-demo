@@ -1,0 +1,31 @@
+<div class="content-grid">
+  <header class="content-grid__website header">
+    <div class="logo">
+      <h2>Ruby</h2>
+    </div>
+    <div class="header__middle">
+      <ul>
+        <li>Pricing</li>
+      </ul>
+    </div>
+    <div class="header__right">
+      <%= link_to "Log in", new_user_session_path, class: "button button--lg" %>
+      <%= link_to "Request Beta Access", new_user_session_path, class: "button button--outline button--lg" %>
+    </div>
+  </header>
+  <div class="hero content-grid__website">
+    <div class="hero__left">
+      <div>
+        <h1>This is a title that will captivate you</h1>
+        <p>This is a great description</p>
+      </div>
+      <div class="hero__buttons">
+        <button class="button">Start Free Trial</button>
+        <button class="button button--outline">Learn More</button>
+      </div>
+    </div>
+    <div class="hero__right">
+      <div class="hero__square"></div>
+    </div>
+  </div>
+</div>

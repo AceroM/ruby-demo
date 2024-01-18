@@ -1,0 +1,187 @@
+<div class="container">
+  <div class="content-grid">
+    <header class="header">
+      <nav>
+        <ul>
+          <li></li>
+          <li><%= link_to "Components", components_admin_index_url %></li>
+        </ul>
+      </nav>
+      <div data-controller="dropdown" data-dropdown-placement-value="bottom-end">
+        <button data-dropdown-target="reference" data-action="click->dropdown#toggle click@window->dropdown#hide" class="avatar">
+          <%= Current.user.name[0..1].upcase %>
+        </button>
+        <div data-dropdown-target="floating" class="d-none">
+          <span class="dropdown-label"><%= Current.user.name %></span>
+          <div role="separator" aria-orientation="horizontal" class="dropdown-separator"></div>
+          <%= link_to settings_path, class: "dropdown-item", "data-dropdown-target": "item" do %>
+            <i class="fa-light fa-cog fa-sm"></i>Settings
+          <% end %>
+          <%= link_to destroy_user_session_path, method: :delete, class: "dropdown-item", data: { "dropdown-target": "item", turbo_method: :delete } do %>
+            <i class="fa-light fa-sign-out fa-sm"></i>Logout
+          <% end %>
+          <% if Current.user.admin? %>
+            <%= link_to stop_impersonating_admin_users_path, method: :post, class: "dropdown-item", "data-dropdown-target": "item" do %>
+              <i class="fa-light fa-mask fa-sm"></i><span>Stop Impersonating</span>
+            <% end %>
+          <% end %>
+        </div>
+      </div>
+    </header>
+    <%= render partial: "tabs" %>
+  </div>
+  <div class="content-grid">
+    <h2 class="heading-2">Content Grids</h2>
+  </div>
+  <div class="content-grid content-grid--auth">
+    <div class="log">Auth (380px)</div>
+  </div>
+  <div class="content-grid content-grid--onboarding">
+    <div class="log">Onboarding (552px)</div>
+  </div>
+  <div class="content-grid">
+    <div class="log">Default (778px)</div>
+  </div>
+  <div class="content-grid content-grid--website">
+    <div class="log">Website (1280px)</div>
+  </div>
+  <div class="content-grid">
+    <h2 class="heading-2">Flash</h2>
+    <div class="flash-buttons">
+      <%= button_to show_flash_admin_index_path, method: :post, class: "button button--outline" do %>
+        <i class="fa-light fa-bolt fa-sm"></i>
+        Default Flash
+      <% end %>
+      <%= button_to show_flash_admin_index_path(flash_type: "alert"), method: :post, class: "button button--outline" do %>
+        <i class="fa-light fa-circle-exclamation fa-sm"></i>
+        Alert Flash
+      <% end %>
+      <%= button_to show_flash_admin_index_path(flash_type: "success"), method: :post, class: "button button--outline" do %>
+        <i class="fa-light fa-check fa-sm"></i>
+        Success Flash
+      <% end %>
+    </div>
+    <h2 class="heading-2 content-grid__content">Components</h2>
+    <div class="content-grid__auth">
+      <%= form_tag show_flash_admin_index_path, class: "card" do |f| %>
+        <div class="card__header">
+          <h2 class="heading-2">Card Form</h2>
+        </div>
+        <div class="card__body">
+          <p>Card Content</p>
+          <div class="field">
+            <label for="name" class="label">Name</label>
+            <input id="name" type="text" class="input" placeholder="John Doe"/>
+          </div>
+        </div>
+        <div class="card__footer">
+          <button class="button button--outline">Cancel</button>
+          <button class="button">Submit</button>
+        </div>
+      <% end %>
+    </div>
+    <div>
+      <h3 class="heading-3">Popover</h3>
+      <div data-controller="popover" style="width: fit-content;">
+        <button data-popover-target="reference" data-action="popover#toggle click@window->popover#hide" class="button reference">
+          click me
+        </button>
+        <div data-popover-target="floating" class="d-none">
+          <div>
+            <h1>Nested Link</h1>
+            <%= link_to "Admin", admin_index_path, class: "link" %>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <h3 class="heading-3">Popover w/Input</h3>
+      <div data-controller="popover" style="width: fit-content;">
+        <button data-popover-target="reference" data-action="popover#toggle click@window->popover#hide" class="button">
+          click me
+        </button>
+        <div data-popover-target="floating" class="d-none">
+          <div>
+            <%= link_to "Admin", admin_index_path, class: "link" %>
+            <label>
+              <input type="text" class="input" placeholder="John Doe"/>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <h3 class="heading-3">Tooltip</h3>
+      <div data-controller="tooltip" class="tooltip">
+        <p data-tooltip-target="reference" data-action="mouseenter->tooltip#show mouseleave->tooltip#hide" class="reference">
+          hover over me
+        </p>
+        <div data-tooltip-target="floating" class="d-none">
+          <p class="subtitle">Hello look at this tooltip</p>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div style="width: fit-content;">
+        <h3 class="heading-3">Regular Dropdown</h3>
+        <div data-controller="dropdown" data-dropdown-placement-value="bottom-end">
+          <button data-dropdown-target="reference" data-action="dropdown#toggle click@window->dropdown#hide" class="dropdown-button reference">
+            Dropdown
+            <i class="fa-light fa-sm fa-chevron-down"></i>
+          </button>
+          <div data-dropdown-target="floating" class="d-none">
+            <button data-dropdown-target="item" class="dropdown-item">View Profile Of this User</button>
+            <button data-dropdown-target="item" class="dropdown-item">Logout</button>
+          </div>
+        </div>
+      </div>
+      <div>
+        <h3 class="heading-3">Dropdown 2</h3>
+        <div data-controller="dropdown">
+          <button data-dropdown-target="reference" data-action="dropdown#toggle click@window->dropdown#hide" class="dropdown-button reference">
+            Dropdown
+            <i class="fa-light fa-sm fa-chevron-down"></i>
+          </button>
+          <div data-dropdown-target="floating" class="d-none">
+            <button data-dropdown-target="item" class="dropdown-item">View Profile</button>
+            <button data-dropdown-target="item" class="dropdown-item">Logout</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <h3 class="heading-3">Dialog</h3>
+      <div data-controller="dialog">
+        <button data-action="dialog#open" class="button">Open Modal</button>
+        <div data-dialog-target="content" class="d-none dialog">
+          <button class="dialog__close" data-action="click->dialog#close">
+            <i class="fa-sm fa-light fa-times"></i>
+          </button>
+          <div class="dialog__header">
+            <h2 class="heading-2">Dialog Header</h2>
+          </div>
+          <div class="dialog__body">
+            <p>Dialog Body</p>
+          </div>
+          <div class="dialog__footer">
+            <button data-dialog-target="focus" data-action="click->dialog#close" class="button button--outline">Cancel</button>
+            <button data-action="click->dialog#close" class="button">Submit</button>
+          </div>
+        </div>
+        <div data-dialog-target="overlay" data-action="click->dialog#close" class="d-none dialog-overlay"></div>
+      </div>
+    </div>
+    <div>
+      <h3 class="heading-3">Confirm Alert Dialog</h3>
+      <%= button_to admin_index_path, method: :get, form: {
+        data: {
+          turbo_confirm: "Are you sure?",
+          turbo_confirm_description: "Your record will be deleted",
+        }
+      }, class: "button button--outline" do %>
+        <i class="fa-light fa-warning fa-sm"></i>
+        Confirm
+      <% end %>
+    </div>
+  </div>
+</div>

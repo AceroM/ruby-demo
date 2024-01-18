@@ -1,0 +1,12 @@
+<%= turbo_frame_tag "flash" do %>
+  <div data-controller="flash" class="flash<%= " flash--open" if flash.present? %><%= " flash--alert" if flash[:alert] %><%= " flash--success" if flash[:success] %>">
+    <% if flash.present? %>
+      <%= flash[:notice] %>
+      <%= flash[:alert] %>
+      <%= flash[:success] %>
+    <% end %>
+    <div data-action="click->flash#close" class="flash__close">
+      <i class="fa-sm fa-light fa-times"></i>
+    </div>
+  </div>
+<% end %>
