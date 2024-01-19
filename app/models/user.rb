@@ -1,6 +1,7 @@
 class User < ApplicationRecord
   has_prefix_id :usr
   broadcasts_refreshes
+  pay_customer
   has_one :user_onboarding, dependent: :destroy
 
   devise :otp_authenticatable, :database_authenticatable, :registerable,

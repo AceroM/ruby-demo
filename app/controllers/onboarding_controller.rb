@@ -4,7 +4,7 @@ class OnboardingController < ApplicationController
   before_action :set_user_onboarding!
 
   def index
-    redirect_to onboarding_path(id: "welcome")
+    redirect_to onboarding_path(page: "welcome")
   end
 
   def show
@@ -38,10 +38,10 @@ class OnboardingController < ApplicationController
   private
 
   def render_or_redirect(path)
-    if params[:id] == path
+    if params[:page] == path
       render path
     else
-      redirect_to onboarding_path(id: path)
+      redirect_to onboarding_path(page: path)
     end
   end
 end

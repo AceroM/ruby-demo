@@ -17,7 +17,13 @@ Rails.application.routes.draw do
     resource :password
   end
   resources :settings, only: [:index]
-  resources :onboarding, only: [:index, :show]
+  resources :onboarding, param: :page, only: [:index, :show]
+  resources :subscriptions do
+    collection do
+      get "start"
+      get "plans"
+    end
+  end
 
   devise_for :users, controllers: {
     registrations: "accounts/registrations",
