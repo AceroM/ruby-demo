@@ -1,6 +1,8 @@
 class User < ApplicationRecord
   has_prefix_id :usr
   broadcasts_refreshes
+  has_one :user_onboarding, dependent: :destroy
+
   devise :otp_authenticatable, :database_authenticatable, :registerable,
     :recoverable, :rememberable, :validatable, :lockable, :timeoutable, :confirmable, :trackable
 

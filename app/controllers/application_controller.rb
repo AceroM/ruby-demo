@@ -49,4 +49,10 @@ class ApplicationController < ActionController::Base
       end
     end
   end
+
+  def set_user_onboarding!
+    if Current.user
+      Current.onboarding = Current.user.user_onboarding
+    end
+  end
 end

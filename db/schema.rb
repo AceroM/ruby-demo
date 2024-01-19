@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_01_18_035419) do
+ActiveRecord::Schema[7.1].define(version: 2024_01_18_151312) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -92,6 +92,23 @@ ActiveRecord::Schema[7.1].define(version: 2024_01_18_035419) do
     t.index ["scheduled_at"], name: "index_good_jobs_on_scheduled_at", where: "(finished_at IS NULL)"
   end
 
+  create_table "user_onboardings", force: :cascade do |t|
+    t.boolean "accepted_disclosures"
+    t.string "phone_number"
+    t.boolean "person_organization_linked"
+    t.boolean "person_address_saved"
+    t.boolean "business_info_saved"
+    t.boolean "business_info_collected"
+    t.string "kyc_code"
+    t.string "kyb_code"
+    t.boolean "virtual_account_created"
+    t.datetime "plaid_connection_time"
+    t.bigint "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_user_onboardings_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "name"
     t.boolean "suspended"
@@ -127,6 +144,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_01_18_035419) do
     t.string "otp_persistence_seed"
     t.string "otp_session_challenge"
     t.datetime "otp_challenge_expires"
+    t.boolean "onboarded", default: false
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["otp_challenge_expires"], name: "index_users_on_otp_challenge_expires"
@@ -135,4 +153,5 @@ ActiveRecord::Schema[7.1].define(version: 2024_01_18_035419) do
     t.index ["unlock_token"], name: "index_users_on_unlock_token", unique: true
   end
 
+  add_foreign_key "user_onboardings", "users"
 end

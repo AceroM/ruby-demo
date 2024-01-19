@@ -17,6 +17,7 @@ Rails.application.routes.draw do
     resource :password
   end
   resources :settings, only: [:index]
+  resources :onboarding, only: [:index, :show]
 
   devise_for :users, controllers: {
     registrations: "accounts/registrations",
@@ -32,12 +33,6 @@ Rails.application.routes.draw do
   end
   if Rails.env.development?
     mount LetterOpenerWeb::Engine, at: "/letter_opener"
-    resources :admin do
-      collection do
-        get :components
-        post :show_flash
-      end
-    end
   end
   get "up" => "rails/health#show", as: :rails_health_check
   get "/terms" => "terms_of_service#index"
