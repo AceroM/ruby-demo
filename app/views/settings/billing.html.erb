@@ -1,0 +1,160 @@
+<% title "Billing" %>
+
+<div class="content-grid">
+  <h1 class="heading-1">Billing</h1>
+  <%= render partial: "tabs" %>
+  <div class="billing-section">
+    <% if Current.user.try(:subscription).try(:cancelled?) %>
+      <div class="flash flash--open flash--alert">
+        <p>Your account currently does not have an active plan. To continue using Ruby, please resubscribe</p>
+      </div>
+    <% end %>
+  </div>
+  <div class="billing-section">
+    <div class="plans">
+      <% current_amount = @subscription.plans.find { |p| p["current"] }.dig("amount") %>
+      <% @subscription.plans.each do |plan| %>
+        <div class="plan">
+          <div class="plan__header">
+            <h4 class="heading-4"><%= plan["nickname"] %></h4>
+            <% if plan["current"] %>
+              <%= subscription_badge(@subscription.display_status) %>
+            <% end %>
+          </div>
+          <% if plan["current"] && @subscription.active? %>
+            <p>Current plan</p>
+            <% if @subscription.on_trial? %>
+              <p>Trial ends at <%= format_date_with_time @subscription.trial_ends_at %></p>
+            <% end %>
+            <% if @subscription.cancelled? %>
+              <p>Plan ends at <%= format_date_with_time @subscription.ends_at %></p>
+            <% end %>
+            <% if @subscription.will_pause? %>
+              <p>Plan will paused at <%= format_date_with_time @subscription.pause_starts_at %></p>
+            <% end %>
+            <% if @subscription.will_cancel? %>
+              <p>Plan will be cancelled at <%= format_date_with_time @subscription.ends_at %></p>
+            <% end %>
+          <% end %>
+          <p><%= format_stripe_dollar plan["amount"] %></p>
+          <p><%= plan.dig("metadata", "description") %></p>
+          <div class="plan__footer">
+            <% if @subscription.cancelled? %>
+              <%= button_to resubscribe_subscription_path(plan_id: plan["id"]), method: :post, form: {
+                data: {
+                  turbo_confirm: "You are about to resubscribe to \"#{plan["nickname"]}\". Are you sure?",
+                  turbo_confirm_description: "This will resubscribe you to \"#{plan["nickname"]}\". You will be charged immediately for the new plan.",
+                  turbo_confirm_type: "primary"
+                }
+              }, class: "button button--outline" do %>
+                Resubscribe
+              <% end %>
+            <% elsif plan["current"] %>
+              <%= link_to "Manage Plan", billing_subscriptions_path, class: "button button--outline" %>
+            <% else %>
+              <%= button_to subscription_path(plan["id"]), method: :patch, form: {
+                data: {
+                  turbo_confirm: "You are about to change your plan to \"#{plan["nickname"]}\". Are you sure?",
+                  turbo_confirm_description: "This will change your plan to \"#{plan["nickname"]}\". You will be charged immediately for the new plan.",
+                  turbo_confirm_type: "primary"
+                }
+              }, class: "button button--outline" do %>
+                <% if current_amount > plan["amount"] %>
+                  Downgrade
+                <% elsif current_amount < plan["amount"] %>
+                  Upgrade
+                <% else %>
+                  Update
+                <% end %>
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+  <div class="billing-section">
+    <div class="header">
+      <div class="ellipsis-container">
+        <h3 class="heading-3 ellipsis-container__text">Payment Methods</h3>
+        <p class="subtitle ellipsis-container__text">The payment used for your subscription</p>
+      </div>
+      <%= link_to "Manage", billing_subscriptions_path, class: "button button--outline" %>
+    </div>
+    <div class="payment-methods billing-section__content">
+      <% @customer.payment_methods.each do |card| %>
+        <%
+          brand = card.data["brand"]
+          subtitle = "Expires #{card.data["exp_month"]}/#{card.data["exp_year"]}"
+          if card.type == "card"
+            title = "#{brand} ending in #{card.data["last4"]}"
+          else
+            title = card.type
+          end
+        %>
+        <div class="payment-methods__card ellipsis-container">
+          <div class="payment-methods__header">
+            <% if card.type == "card" %>
+              <i class="fa-brands fa-cc-<%= card_brand(brand) %> fa-2xl"></i>
+            <% elsif card.type == "paypal" %>
+              <i class="fa-brands fa-paypal fa-2xl"></i>
+            <% else %>
+              <i class="fa-brands fa-cc-stripe fa-2xl"></i>
+            <% end %>
+            <div>
+              <p class="heading-4"><%= title %></p>
+              <% if card.type == "card" %>
+                <p class="subtitle"><%= subtitle %></p>
+              <% end %>
+            </div>
+          </div>
+          <div class="separator"></div>
+          <div class="payment-methods__footer">
+            <% if card.default %>
+              <div class="badge badge--gray">
+                Default
+              </div>
+              <% if @subscription.active? %>
+                <p class="subtitle ellipsis-container__text">
+                  Next billing on <%= format_date @subscription.current_period_end, "%b, %d" %>
+                </p>
+              <% end %>
+            <% else %>
+              <div></div>
+              <%= link_to "Edit", billing_subscriptions_path, class: "link" %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  </div>
+  <div class="billing-section">
+    <h3 class="heading-3">Billing History</h3>
+    <p class="subtitle">Download your recent pl[an receipts and invoices</p>
+  </div>
+  <div class="table-wrapper content-grid__table billing-section__content">
+    <table class="table">
+      <thead>
+      <tr>
+        <th>Date</th>
+        <th>Amount</th>
+        <th>Description</th>
+        <th></th>
+      </tr>
+      </thead>
+      <tbody>
+      <% if @charges.empty? %>
+        <tr>
+          <td colspan="4">No charges found</td>
+        </tr>
+      <% else %>
+        <%= render partial: "charge", collection: @charges %>
+      <% end %>
+      </tbody>
+    </table>
+  </div>
+  <div class="pagy-wrapper">
+    <%= pagy_info(@pagy, item_name: "invoice").html_safe %>
+    <%= pagy_nav(@pagy).html_safe if @pagy.pages > 1 %>
+  </div>
+</div>

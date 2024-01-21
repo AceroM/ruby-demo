@@ -1,34 +1,34 @@
 class OnboardingController < ApplicationController
   layout "onboarding"
   before_action :authenticate_and_set_user!
-  before_action :set_user_onboarding!
+  before_action :set_subscription!
+  before_action :set_onboarding_flow, only: [:show]
 
   def index
     redirect_to onboarding_path(page: "welcome")
   end
 
   def show
-    unless Current.onboarding
-      render_or_redirect "welcome"
-      return
+    unless @flow
+      return render_or_redirect "welcome"
     end
-    if Current.onboarding.plaid_connection_time
+    if @flow.plaid_connection_time
       render_or_redirect "finished"
-    elsif Current.onboarding.kyb_code == "ACCEPTED"
+    elsif @flow.kyb_code == "ACCEPTED"
       render_or_redirect "link_plaid"
-    elsif Current.onboarding.kyc_code == "ACCEPTED"
+    elsif @flow.kyc_code == "ACCEPTED"
       render_or_redirect "kyb"
-    elsif Current.onboarding.business_info_collected
+    elsif @flow.business_info_collected
       render_or_redirect "kyc"
-    elsif Current.onboarding.business_info_saved
+    elsif @flow.business_info_saved
       render_or_redirect "business_info"
-    elsif Current.onboarding.person_address_saved
+    elsif @flow.person_address_saved
       render_or_redirect "business_info"
-    elsif Current.onboarding.person_organization_linked
+    elsif @flow.person_organization_linked
       render_or_redirect "address"
-    elsif Current.onboarding.phone_number
+    elsif @flow.phone_number
       render_or_redirect "info"
-    elsif Current.onboarding.accepted_disclosures
+    elsif @flow.accepted_disclosures
       render_or_redirect "phone_number"
     else
       render_or_redirect "not_found"
@@ -43,5 +43,17 @@ class OnboardingController < ApplicationController
     else
       redirect_to onboarding_path(page: path)
     end
+  end
+
+  def set_subscription!
+    @subscription = Current.user.subscription
+    active = @subscription.try(:active?)
+    return redirect_to start_subscriptions_path unless @subscription
+    return redirect_to billing_settings_path if !Current.onboarded? && !active
+    redirect_to dashboard_path if Current.onboarded? && active
+  end
+
+  def set_onboarding_flow
+    @flow = Current.user.user_onboarding
   end
 end

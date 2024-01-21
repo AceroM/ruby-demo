@@ -1,6 +1,7 @@
-<div class="tabs content-grid__tabs">
-  <ul class="tabs__list tabs__list--underline">
+<div class="tabs tabs--underline content-grid__tabs">
+  <ul class="tabs__list">
     <%= settings_link "General", [settings_path] %>
+    <%= settings_link "Billing", [billing_settings_path] %>
     <%= settings_link t("devise.otp.otp_tokens.title"), [user_otp_token_path] %>
   </ul>
 </div>

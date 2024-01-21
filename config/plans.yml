@@ -1,0 +1,63 @@
+---
+:development:
+- id: price_1O1tqgE8Ipt6FyiHkTSjiIRm
+  object: plan
+  active: true
+  aggregate_usage:
+  amount: 0
+  amount_decimal: '0'
+  billing_scheme: per_unit
+  created: 1697474458
+  currency: usd
+  interval: month
+  interval_count: 1
+  livemode: false
+  metadata:
+    description: free plan
+  nickname: Free
+  product: prod_Kk7K6dtbVH63eW
+  tiers_mode:
+  transform_usage:
+  trial_period_days:
+  usage_type: licensed
+- id: price_1LgE2dE8Ipt6FyiHLY0z0SKz
+  object: plan
+  active: true
+  aggregate_usage:
+  amount: 1999
+  amount_decimal: '1999'
+  billing_scheme: per_unit
+  created: 1662756191
+  currency: usd
+  interval: month
+  interval_count: 1
+  livemode: false
+  metadata:
+    description: starter plan
+  nickname: Starter
+  product: prod_MP26QoN5viTqOh
+  tiers_mode:
+  transform_usage:
+  trial_period_days: 60
+  usage_type: licensed
+- id: price_1K4d5lE8Ipt6FyiHyxGh899x
+  object: plan
+  active: true
+  aggregate_usage:
+  amount: 9999
+  amount_decimal: '9999'
+  billing_scheme: per_unit
+  created: 1639019685
+  currency: usd
+  interval: month
+  interval_count: 1
+  livemode: false
+  metadata:
+    description: advanced plan
+  nickname: Advanced
+  product: prod_Kk7K6dtbVH63eW
+  tiers_mode:
+  transform_usage:
+  trial_period_days:
+  usage_type: licensed
+:production: []

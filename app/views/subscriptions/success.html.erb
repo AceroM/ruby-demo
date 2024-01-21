@@ -1,0 +1,17 @@
+<% title "Your #{@plan_name} plan subscription has started!" %>
+
+<div class="card">
+  <div class="card__header">
+    <h2 class="heading-2">
+      Your "<%= @plan_name %> plan" subscription has started!
+    </h2>
+  </div>
+  <div class="card__body">
+    <p>
+      To continue with onboarding, please click on the button below
+    </p>
+  </div>
+  <div class="card__footer">
+    <%= link_to "Continue", onboarding_path(page: "welcome"), class: "button button--pad-sm" %>
+  </div>
+</div>

@@ -21,29 +21,38 @@
     </div>
     <ul class="sidebar__nav">
       <li><%= dashboard_link "Home", [dashboard_path] %></li>
-      <li><%= dashboard_link "Settings", [settings_path, user_otp_token_path], "cog" %></li>
+      <li><%= dashboard_link "Settings", [settings_path, user_otp_token_path], "cog", true %></li>
     </ul>
   </div>
-  <div data-controller="dropdown" data-dropdown-placement-value="top-start" class="sidebar__footer">
-    <button data-dropdown-target="reference" data-action="dropdown#toggle click@window->dropdown#hide" class="sidebar__profile-dropdown">
-      <span class="sidebar__profile-text"><%= Current.user.email %></span>
-      <i class="fa-light fa-chevron-down fa-sm"></i>
-    </button>
-    <div data-dropdown-target="floating" class="d-none">
-      <button data-dropdown-target="item" class="dropdown-item">
-        <span><%= Current.user.email %></span>
+  <% if Current.onboarded? %>
+    <div data-controller="dropdown" data-dropdown-placement-value="top-start" class="sidebar__footer">
+      <button data-dropdown-target="reference" data-action="dropdown#toggle click@window->dropdown#hide" class="sidebar__profile-dropdown">
+        <span class="sidebar__profile-text"><%= Current.user.email %></span>
+        <i class="fa-light fa-chevron-down fa-sm"></i>
       </button>
+      <div data-dropdown-target="floating" class="d-none">
+        <button data-dropdown-target="item" class="dropdown-item">
+          <span><%= Current.user.email %></span>
+        </button>
+      </div>
     </div>
-  </div>
+  <% end %>
 </aside>
 <div class="content content--dashboard">
   <div class="sticky-header">
     <div class="content-grid content-grid--header content-grid--full">
       <header class="header">
-        <div class="header__search">
-          <i class="fa-light fa-search fa-sm"></i>
-          <p>Search</p>
-        </div>
+        <% if Current.onboarded? || Current.user.try(:subscription).try(:cancelled?) %>
+          <div class="header__search">
+            <i class="fa-light fa-search fa-sm"></i>
+            <p>Search</p>
+          </div>
+        <% else %>
+          <%= link_to onboarding_index_path, class: "button button--outline" do %>
+            <i class="fa-light fa-chevron-left fa-sm"></i>
+            Back to Onboarding
+          <% end %>
+        <% end %>
         <div class="header__profile">
           <div data-controller="popover" data-popover-placement-value="bottom-end">
             <button data-popover-target="reference" data-action="popover#toggle click@window->popover#hide" class="header__bell">

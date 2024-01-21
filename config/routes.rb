@@ -16,12 +16,20 @@ Rails.application.routes.draw do
   namespace :account do
     resource :password
   end
-  resources :settings, only: [:index]
   resources :onboarding, param: :page, only: [:index, :show]
-  resources :subscriptions do
+  resources :settings, only: [:index] do
+    collection do
+      get "billing"
+    end
+  end
+  resources :subscriptions, param: :plan_id, only: [:update] do
     collection do
       get "start"
-      get "plans"
+      get "success"
+      get "billing"
+    end
+    member do
+      post "resubscribe"
     end
   end
 

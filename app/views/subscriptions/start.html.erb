@@ -4,4 +4,13 @@
   <div class="card__header">
     <h2 class="heading-2">Choose your plan</h2>
   </div>
+  <div class="card__body plans">
+    <% @stripe_plans.each do |plan| %>
+      <div class="plan">
+        <h3><%= plan[:name] %></h3>
+        <p><%= plan[:description] %></p>
+        <%= render partial: "pay/stripe/checkout_button", locals: { session: plan[:session], text: "Select" } %>
+      </div>
+    <% end %>
+  </div>
 </div>

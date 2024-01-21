@@ -1,0 +1,10 @@
+<tr>
+  <td><%= format_date_with_time charge.created_at %></td>
+  <td><%= format_stripe_dollar charge.amount %></td>
+  <td><%= charge.data.dig("line_items", 0, "description") %></td>
+  <td>
+    <a href="<%= charge.data.dig("stripe_receipt_url") %>" target="_blank" class="link">
+      Receipt
+    </a>
+  </td>
+</tr>

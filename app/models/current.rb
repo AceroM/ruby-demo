@@ -1,3 +1,7 @@
 class Current < ActiveSupport::CurrentAttributes
-  attribute :user, :onboarding
+  attribute :user
+
+  def onboarded?
+    user.onboarded
+  end
 end

@@ -79,7 +79,7 @@
         </tbody>
       </table>
     </div>
-    <div class="footer">
+    <div class="pagy-wrapper">
       <%= pagy_info(@pagy, item_name: "users").html_safe %>
       <%= pagy_nav(@pagy).html_safe if @pagy.pages > 1 %>
     </div>

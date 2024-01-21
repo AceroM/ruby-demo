@@ -22,8 +22,16 @@ class User < ApplicationRecord
     self.signed_tos_on = Date.today
   end
 
+  alias_method :customer, :payment_processor
+
+  def subscription
+    @subscription ||= payment_processor.try(:subscription)
+  end
+
+  alias_method :subscribed?, :subscription
+
   def email_confirmed?
-    # confirmed_at?
+    confirmed_at?
   end
 
   def admin?

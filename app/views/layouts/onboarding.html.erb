@@ -5,6 +5,9 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <%= csrf_meta_tags %>
   <%= csp_meta_tag %>
+  <% if @load_stripe %>
+    <%= tag.meta name: "stripe-key", content: Pay::Stripe.public_key %>
+  <% end %>
 
   <%= stylesheet_link_tag "resets", "data-turbo-track": "reload" %>
   <%= stylesheet_link_tag "globals", "data-turbo-track": "reload" %>
@@ -19,24 +22,35 @@
 <div class="content-grid content-grid--onboarding">
   <header class="header">
     <h2 class="heading-1">Ruby</h2>
-    <div data-dropdown-target="floating" class="d-none">
-      <span class="dropdown-label"><%= Current.user.name %></span>
-      <div role="separator" aria-orientation="horizontal" class="dropdown-separator"></div>
-      <%= link_to settings_path, class: "dropdown-item", "data-dropdown-target": "item" do %>
-        <i class="fa-light fa-cog fa-sm"></i>Settings
-      <% end %>
-      <%= link_to destroy_user_session_path, method: :delete, class: "dropdown-item", data: { "dropdown-target": "item", turbo_method: :delete } do %>
-        <i class="fa-light fa-sign-out fa-sm"></i>Logout
-      <% end %>
-      <% if Current.user.admin? %>
-        <%= link_to stop_impersonating_admin_users_path, method: :post, class: "dropdown-item", "data-dropdown-target": "item" do %>
-          <i class="fa-light fa-mask fa-sm"></i><span>Stop Impersonating</span>
+    <div data-controller="dropdown" data-dropdown-placement-value="bottom-end">
+      <button data-dropdown-target="reference" data-action="click->dropdown#toggle click@window->dropdown#hide" class="avatar">
+        <%= Current.user.name[0..1].upcase %>
+      </button>
+      <div data-dropdown-target="floating" class="d-none">
+        <span class="dropdown-label"><%= Current.user.name %></span>
+        <div role="separator" aria-orientation="horizontal" class="dropdown-separator"></div>
+        <%= link_to settings_path, class: "dropdown-item", "data-dropdown-target": "item" do %>
+          <i class="fa-light fa-cog fa-sm"></i>Settings
         <% end %>
-      <% end %>
+        <%= link_to billing_settings_path, class: "dropdown-item", "data-dropdown-target": "item" do %>
+          <i class="fa-light fa-credit-card fa-sm"></i>Subscription
+        <% end %>
+        <%= link_to destroy_user_session_path, method: :delete, class: "dropdown-item", data: { "dropdown-target": "item", turbo_method: :delete } do %>
+          <i class="fa-light fa-sign-out fa-sm"></i>Logout
+        <% end %>
+        <% if Current.user.admin? %>
+          <%= link_to stop_impersonating_admin_users_path, method: :post, class: "dropdown-item", "data-dropdown-target": "item" do %>
+            <i class="fa-light fa-mask fa-sm"></i><span>Stop Impersonating</span>
+          <% end %>
+        <% end %>
+      </div>
     </div>
   </header>
   <main class="content-grid__content">
     <%= yield %>
+    <% if @load_stripe %>
+      <script src="https://js.stripe.com/v3/" defer></script>
+    <% end %>
   </main>
 </div>
 <%= render "shared/font_awesome" %>
