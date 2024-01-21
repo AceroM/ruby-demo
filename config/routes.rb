@@ -16,7 +16,7 @@ Rails.application.routes.draw do
   namespace :account do
     resource :password
   end
-  resources :onboarding, param: :page, only: [:index, :show]
+  resources :onboarding, param: :page, only: [:index, :update, :show]
   resources :settings, only: [:index] do
     collection do
       get "billing"

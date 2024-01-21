@@ -14,6 +14,7 @@
   livemode: false
   metadata:
     description: free plan
+    type: saas
   nickname: Free
   product: prod_Kk7K6dtbVH63eW
   tiers_mode:

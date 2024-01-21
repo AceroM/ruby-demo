@@ -1822,7 +1822,8 @@ a.button {
 /* Payments */
 
 .plans {
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
   gap: 1rem;
 }
 
@@ -1831,7 +1832,6 @@ a.button {
   height: 100%;
   border-radius: 0.625rem;
   padding: 1rem;
-  flex: 1;
 }
 
 .plan__header {
@@ -1849,7 +1849,7 @@ a.button {
 
 @media (width <= 48rem) {
   .plans {
-    flex-direction: column;
+    grid-template-columns: 1fr;
   }
 }
 

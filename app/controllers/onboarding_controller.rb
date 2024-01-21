@@ -35,11 +35,15 @@ class OnboardingController < ApplicationController
     end
   end
 
+  def update
+    redirect_to onboarding_path(page: "welcome"), notice: "ASdf"
+  end
+
   private
 
   def render_or_redirect(path)
     if params[:page] == path
-      render path
+      render "onboarding/#{path}"
     else
       redirect_to onboarding_path(page: path)
     end

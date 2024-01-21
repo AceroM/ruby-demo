@@ -1,0 +1,13 @@
+<% title "Welcome" %>
+
+<%= form_tag onboarding_path, method: :patch, class: "card" do %>
+  <div class="card__header">
+    <h2 class="heading-2">Welcome</h2>
+  </div>
+  <div class="card__body">
+    <p>To get started, please accept the following disclosures</p>
+  </div>
+  <div class="card__footer">
+    <%= submit_tag "Accept", class: "button button--primary" %>
+  </div>
+<% end %>

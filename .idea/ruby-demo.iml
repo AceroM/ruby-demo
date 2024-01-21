@@ -3104,9 +3104,8 @@
           </RakeTaskImpl>
           <RakeTaskImpl id="stripe">
             <subtasks>
-              <RakeTaskImpl description="Plans" fullCommand="stripe:plans" id="plans" />
+              <RakeTaskImpl description="List all plans you have synced from stripe" fullCommand="stripe:plans" id="plans" />
               <RakeTaskImpl description="Sync subscription states from Stripe" fullCommand="stripe:sync" id="sync" />
-              <RakeTaskImpl description="Sync charges from Stripe" fullCommand="stripe:sync_charges" id="sync_charges" />
               <RakeTaskImpl description="Sync plans config file with the ons in Stripe" fullCommand="stripe:sync_plans" id="sync_plans" />
             </subtasks>
           </RakeTaskImpl>
