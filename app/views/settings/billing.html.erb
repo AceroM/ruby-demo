@@ -79,9 +79,21 @@
         <h3 class="heading-3 ellipsis-container__text">Payment Methods</h3>
         <p class="subtitle ellipsis-container__text">The payment used for your subscription</p>
       </div>
-      <%= link_to "Manage", billing_subscriptions_path, class: "button button--outline" %>
+      <% if @customer.payment_methods.present? %>
+        <%= link_to "Manage", billing_subscriptions_path, class: "button button--outline" %>
+      <% else %>
+        <%= link_to billing_subscriptions_path, class: "button button--outline" do %>
+          <i class="fa-light fa-plus"></i>
+          Add Payment Method
+        <% end %>
+      <% end %>
     </div>
     <div class="payment-methods billing-section__content">
+      <% if @customer.payment_methods.empty? %>
+        <div class="empty-text">
+          No payment methods found
+        </div>
+      <% end %>
       <% @customer.payment_methods.each do |card| %>
         <%
           brand = card.data["brand"]
@@ -145,7 +157,7 @@
       <tbody>
       <% if @charges.empty? %>
         <tr>
-          <td colspan="4">No charges found</td>
+          <td class="table__empty-cell" colspan="4">No charges found</td>
         </tr>
       <% else %>
         <%= render partial: "charge", collection: @charges %>

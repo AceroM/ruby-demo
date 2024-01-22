@@ -8,11 +8,25 @@ namespace :stripe do
   desc "Sync subscription states from Stripe"
   task sync: [:environment] do |task, _args|
     Pay::Subscription.find_each do |subscription|
-      next if subscription.free_plan?
       next unless subscription.customer.processor == "stripe"
       Pay::Stripe::Subscription.sync(subscription.processor_id)
     end
     puts "Subscriptions synced successfully."
+  end
+  desc "Sync payment method states from Stripe"
+  task :sync_methods, [:id] => :environment do |task, _args|
+    id = _args[:id]
+    if id
+      list = [User.find(id)].compact
+    else
+      list = User.all
+    end
+    list.each do |user|
+      next unless user.customer.processor == "stripe"
+      Stripe::PaymentMethod.list(customer: user.customer.processor_id).each do |method|
+        Pay::Stripe::PaymentMethod.sync(method.id)
+      end
+    end
   end
   desc "Sync plans config file with the ons in Stripe"
   task sync_plans: [:environment] do |task, _args|

@@ -1819,6 +1819,10 @@ a.button {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   gap: 1rem;
+
+  &:has(.empty-text) {
+    grid-template-columns: 1fr;
+  }
 }
 
 .payment-methods__card {

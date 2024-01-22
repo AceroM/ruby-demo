@@ -84,6 +84,9 @@ class SubscriptionsController < ApplicationController
     unless @subscription.active? && @subscription.data.dig("subscription_items").length > 0
       return redirect_to billing_settings_path, alert: "You cannot change your plan while your subscription is paused or canceled."
     end
+    if Current.user.customer.payment_methods.length == 0
+      return redirect_to billing_settings_path, alert: "You cannot change your plan without a payment method. Please add a payment method first."
+    end
     plan_id = params[:plan_id]
     unless plan_id.present? && plan_id.match(/^price_\w+$/) && @subscription.plans.map { |plan| plan["id"] }.include?(plan_id)
       return redirect_to billing_settings_path, alert: "Invalid plan."

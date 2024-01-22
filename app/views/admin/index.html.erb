@@ -71,7 +71,7 @@
         <tbody>
         <% if @users.empty? %>
           <tr>
-            <td colspan="5" class="table__empty-cell">No users found</td>
+            <td colspan="7" class="table__empty-cell">No users found</td>
           </tr>
         <% else %>
           <%= render partial: "admin/users/user", collection: @users %>
