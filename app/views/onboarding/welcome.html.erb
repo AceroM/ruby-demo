@@ -1,13 +1,27 @@
 <% title "Welcome" %>
 
-<%= form_tag onboarding_path, method: :patch, class: "card" do %>
+<%= form_with url: onboarding_path, method: :patch, class: "card" do |f| %>
   <div class="card__header">
     <h2 class="heading-2">Welcome</h2>
   </div>
   <div class="card__body">
     <p>To get started, please accept the following disclosures</p>
+    <div>
+      <div class="field">
+        <%= f.label :terms_of_service, class: "checkbox" do %>
+          <%= f.check_box :terms_of_service %>
+          <span>I agree to the <%= link_to "Terms of Service", terms_url, class: "link" %></span>
+        <% end %>
+      </div>
+      <div class="field">
+        <%= f.label :kyc_data_collection, class: "checkbox" do %>
+          <%= f.check_box :kyc_data_collection %>
+          <span>I agree to the <%= link_to "KYC Data Collection", terms_url, class: "link" %></span>
+        <% end %>
+      </div>
+    </div>
   </div>
   <div class="card__footer">
-    <%= submit_tag "Accept", class: "button button--primary" %>
+    <%= submit_tag "Accept", class: "button button--primary button--pad-sm" %>
   </div>
 <% end %>

@@ -37,6 +37,10 @@ class User < ApplicationRecord
     confirmed_at?
   end
 
+  def synctera?
+    synctera_person.present? || synctera_business.present?
+  end
+
   def admin?
     admin_clearance > 0
   end

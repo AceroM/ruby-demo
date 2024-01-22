@@ -1,5 +1,5 @@
 module Synctera
-  class Persons
+  class Businesses
     def initialize(client:, user:)
       @client = client
       @user = user
@@ -10,9 +10,10 @@ module Synctera
     end
 
     def create
-      @client.post("/v0/persons", {
+      @client.post("/v0/businesses", {
         is_customer: true,
-        status: "PROSPECT"
+        status: "PROSPECT",
+        entity_name: @user.email
       }.to_json)
     end
   end

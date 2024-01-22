@@ -2,10 +2,9 @@ class OnboardingController < ApplicationController
   layout "onboarding"
   before_action :authenticate_and_set_user!
   before_action :set_subscription!
-  before_action :set_onboarding_flow, only: [:show]
 
   SAAS_PAGES = %w[integrations connect_store finished]
-  BANK_PAGES = %w[welcome info disclosures phone_number address business_info kyc link_plaid finished]
+  BANK_PAGES = %w[welcome info disclosures phone_number address business_info kyc kyb link_plaid finished]
 
   def index
     redirect_to onboarding_path(page: "welcome")
@@ -15,38 +14,50 @@ class OnboardingController < ApplicationController
     if @subscription.saas_plan?
       return render_or_redirect "integrations"
     end
-    if @flow.plaid_connection_time
-      render_or_redirect "finished"
-    elsif @flow.kyb_code == "ACCEPTED"
-      render_or_redirect "link_plaid"
-    elsif @flow.kyc_code == "ACCEPTED"
-      render_or_redirect "kyb"
-    elsif @flow.business_info_collected
-      render_or_redirect "kyc"
-    elsif @flow.business_info_saved
-      render_or_redirect "business_info"
-    elsif @flow.person_address_saved
-      render_or_redirect "business_info"
-    elsif @flow.person_organization_linked
-      render_or_redirect "address"
-    elsif @flow.phone_number
-      render_or_redirect "info"
-    elsif @flow.accepted_disclosures
-      render_or_redirect "phone_number"
-    else
-      render_or_redirect "welcome"
-    end
+    render_or_redirect(params[:page], step)
   end
 
   def update
+    case step
+    when "welcome"
+      disclosures = %i[terms_of_service kyc_data_collection]
+      unless disclosures.all? { |d| params[d] == "1" }
+        return redirect_to onboarding_path(page: "welcome"), notice: "all not accepted"
+      end
+      required_disclosures = %w[E_SIGN CARDHOLDER_AGREEMENT TERMS_AND_CONDITIONS PRIVACY_NOTICE KYC_DATA_COLLECTION]
+      client = Synctera::Client.new(user: Current.user)
+      if Current.user.synctera?
+        user_disclosures = client.disclosures.list
+      else
+        person = client.persons.create
+        business = client.businesses.create
+        Current.user.create_synctera_person(platform_id: person["id"], data: person)
+        Current.user.create_synctera_business(platform_id: business["id"], data: business)
+        user_disclosures = client.disclosures.list
+      end
+      (required_disclosures - user_disclosures.map { |d| d["type"] }).each do |disclosure|
+        res = client.disclosures.accept_person_disclosure(disclosure)
+        puts res
+      end
+      Synctera::Disclosures.sync_all(Current.user)
+      @flow.update(accepted_disclosures: true)
+      redirect_to onboarding_path(page: "phone_number"), notice: "Disclosures accepted"
+    else
+      redirect_to onboarding_path(page: "not_found")
+    end
+  rescue StandardError => e
+    logger.error e.message
+    redirect_to onboarding_path(page: "welcome"), notice: "An error occurred"
   end
 
   private
 
-  def render_or_redirect(path)
+  def render_or_redirect(path, step = nil)
     pages = @subscription.saas_plan? ? SAAS_PAGES : BANK_PAGES
-    if pages.include?(path)
+    if pages.include?(path) && path == step
       render "onboarding/#{path}"
+    elsif pages.include?(path)
+      redirect_to onboarding_path(page: step), notice: "You have not made it to this step yet."
     else
       render "onboarding/not_found"
     end
@@ -60,7 +71,29 @@ class OnboardingController < ApplicationController
     redirect_to dashboard_path if Current.onboarded? && active
   end
 
-  def set_onboarding_flow
-    @flow = Current.user.user_onboarding
+  def step
+    flow = Current.user.user_onboarding
+    @flow = flow || UserOnboarding.create(user: Current.user)
+    if @flow.plaid_connection_time
+      "finished"
+    elsif @flow.kyb_code == "ACCEPTED"
+      "link_plaid"
+    elsif @flow.kyc_code == "ACCEPTED"
+      "kyb"
+    elsif @flow.business_info_collected
+      "kyc"
+    elsif @flow.business_info_saved
+      "business_info"
+    elsif @flow.person_address_saved
+      "business_info"
+    elsif @flow.person_organization_linked
+      "address"
+    elsif @flow.phone_number
+      "info"
+    elsif @flow.accepted_disclosures
+      "phone_number"
+    else
+      "welcome"
+    end
   end
 end

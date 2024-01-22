@@ -19,6 +19,10 @@ module Synctera
       @persons ||= Persons.new(client: self, user: @user)
     end
 
+    def businesses
+      @businesses ||= Businesses.new(client: self, user: @user)
+    end
+
     def disclosures
       @disclosures ||= Disclosures.new(client: self, user: @user)
     end

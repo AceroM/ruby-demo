@@ -3,7 +3,7 @@ namespace :synctera do
   task sync_disclosures: [:environment] do |task, _args|
     User.find_each do |user|
       puts "Syncing disclosures for user: #{user.email}"
-      if user.synctera_person.present?
+      if user.synctera?
         Synctera::Disclosures.sync_all(user)
         "Synced disclosures for user: #{user.email}"
       else
