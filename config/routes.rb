@@ -29,6 +29,7 @@ Rails.application.routes.draw do
       get "billing"
     end
     member do
+      post "free"
       post "resubscribe"
     end
   end

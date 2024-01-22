@@ -4,12 +4,22 @@
   <div class="card__header">
     <h2 class="heading-2">Choose your plan</h2>
   </div>
-  <div class="card__body plans">
+  <div class="card__body subscription-plans">
     <% @stripe_plans.each do |plan| %>
-      <div class="plan">
-        <h3><%= plan[:name] %></h3>
-        <p><%= plan[:description] %></p>
-        <%= render partial: "pay/stripe/checkout_button", locals: { session: plan[:session], text: "Select" } %>
+      <div class="subscription-plan">
+        <div>
+          <h3><%= plan[:name] %></h3>
+          <p><%= plan[:description] %></p>
+          <p><%= format_stripe_dollar plan[:price] %></p>
+          <p class="subtitle">plan type: <%= plan[:type] %></p>
+        </div>
+        <% if plan[:price] > 0 %>
+          <div>
+            <%= render partial: "pay/stripe/checkout_button", locals: { session: plan[:session], text: "Select" } %>
+          </div>
+        <% else %>
+          <%= button_to "Select", free_subscription_path(plan[:id]), method: :post, class: "button button--outline" %>
+        <% end %>
       </div>
     <% end %>
   </div>

@@ -18,5 +18,9 @@ module Synctera
     def persons
       @persons ||= Persons.new(client: self, user: @user)
     end
+
+    def disclosures
+      @disclosures ||= Disclosures.new(client: self, user: @user)
+    end
   end
 end

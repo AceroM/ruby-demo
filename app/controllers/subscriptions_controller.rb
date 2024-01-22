@@ -8,22 +8,35 @@ class SubscriptionsController < ApplicationController
     Current.user.set_payment_processor :stripe
     Current.user.payment_processor.customer
     @load_stripe = true
-    @stripe_plans = STRIPE_PLANS.map { |plan|
+    @stripe_plans = STRIPE_PLANS.map do |plan|
       session = Current.user.payment_processor.checkout(
         mode: "subscription",
-        line_items: plan[:id],
-        subscription_data: { trial_period_days: plan[:trial_period] },
+        line_items: plan["id"],
+        subscription_data: { trial_period_days: plan["trial_period"] },
         success_url: success_subscriptions_url,
         cancel_url: billing_settings_url,
-      )
+      ) if plan["amount"] > 0
       {
-        name: plan[:nickname],
-        description: plan.dig(:metadata, :description),
-        trial_period_days: plan[:trial_period_days],
-        price: plan[:amount],
+        id: plan["id"],
+        name: plan["nickname"],
+        description: plan.dig("metadata", "description"),
+        type: plan.dig("metadata", "type") || "bank",
+        trial_period_days: plan["trial_period_days"],
+        price: plan["amount"],
         session: session
       }
+    end
+  end
+
+  def free
+    unless params[:plan_id].present? && params[:plan_id].match(/^price_\w+$/) && STRIPE_PLANS.any? { |plan|
+      next unless plan["amount"] == 0
+      plan["id"] == params[:plan_id]
     }
+      return redirect_to start_subscriptions_url, alert: "Invalid plan."
+    end
+    Current.user.payment_processor.subscribe(plan: params[:plan_id])
+    redirect_to success_subscriptions_url
   end
 
   def success
@@ -41,7 +54,7 @@ class SubscriptionsController < ApplicationController
       return redirect_to billing_settings_path, alert: "Invalid plan."
     end
     if @subscription
-      subscription = Stripe::Subscription.update(@subscription.processor_id, {
+      stripe_sub = Stripe::Subscription.update(@subscription.processor_id, {
         cancel_at_period_end: false,
         billing_cycle_anchor: "now",
         proration_behavior: "always_invoice",
@@ -51,13 +64,13 @@ class SubscriptionsController < ApplicationController
         }]
       })
     else
-      subscription = Stripe::Subscription.create({
+      stripe_sub = Stripe::Subscription.create({
         customer: @customer.processor_id,
         items: [{ price: plan_id }],
         expand: ["latest_invoice.payment_intent"],
       })
     end
-    Pay::Stripe::Subscription.sync(subscription.id)
+    Pay::Stripe::Subscription.sync(stripe_sub.id, object: stripe_sub)
     redirect_to billing_settings_path.url, allow_other_host: true
   rescue Stripe::StripeError => e
     redirect_to start_subscriptions_url, alert: "An error occurred while creating your subscription. Please try again or contact support."

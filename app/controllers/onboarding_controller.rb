@@ -4,13 +4,16 @@ class OnboardingController < ApplicationController
   before_action :set_subscription!
   before_action :set_onboarding_flow, only: [:show]
 
+  SAAS_PAGES = %w[integrations connect_store finished]
+  BANK_PAGES = %w[welcome info disclosures phone_number address business_info kyc link_plaid finished]
+
   def index
     redirect_to onboarding_path(page: "welcome")
   end
 
   def show
-    unless @flow
-      return render_or_redirect "welcome"
+    if @subscription.saas_plan?
+      return render_or_redirect "integrations"
     end
     if @flow.plaid_connection_time
       render_or_redirect "finished"
@@ -31,21 +34,21 @@ class OnboardingController < ApplicationController
     elsif @flow.accepted_disclosures
       render_or_redirect "phone_number"
     else
-      render_or_redirect "not_found"
+      render_or_redirect "welcome"
     end
   end
 
   def update
-    redirect_to onboarding_path(page: "welcome"), notice: "ASdf"
   end
 
   private
 
   def render_or_redirect(path)
-    if params[:page] == path
+    pages = @subscription.saas_plan? ? SAAS_PAGES : BANK_PAGES
+    if pages.include?(path)
       render "onboarding/#{path}"
     else
-      redirect_to onboarding_path(page: path)
+      render "onboarding/not_found"
     end
   end
 

@@ -3,6 +3,9 @@ class User < ApplicationRecord
   broadcasts_refreshes
   pay_customer
   has_one :user_onboarding, dependent: :destroy
+  has_one :synctera_person, dependent: :destroy
+  has_one :synctera_business, dependent: :destroy
+  has_many :synctera_disclosures, dependent: :destroy
 
   devise :otp_authenticatable, :database_authenticatable, :registerable,
     :recoverable, :rememberable, :validatable, :lockable, :timeoutable, :confirmable, :trackable

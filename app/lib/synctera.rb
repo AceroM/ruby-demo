@@ -1,10 +1,11 @@
-require_relative "synctera/client"
-require_relative "synctera/http"
-require_relative "synctera/cards"
-require_relative "synctera/persons"
+Dir[File.join(__dir__, "synctera", "*.rb")].each do |file|
+  require_relative file
+end
 
 module Synctera
   class SyncteraError < StandardError; end
+
+  class ConfigurationError < StandardError; end
 
   class MiddlewareErrors < Faraday::Middleware
     def call(env)

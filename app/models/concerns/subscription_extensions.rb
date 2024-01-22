@@ -33,6 +33,10 @@ module SubscriptionExtensions
     processor_plan == "free_plan"
   end
 
+  def saas_plan?
+    data.dig("subscription_items", 0, "price", "metadata", "type") == "saas"
+  end
+
   def plans
     STRIPE_PLANS.map do |plan|
       plan["current"] = plan["id"] == processor_plan
