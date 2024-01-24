@@ -26,5 +26,13 @@ module Synctera
     def disclosures
       @disclosures ||= Disclosures.new(client: self, user: @user)
     end
+
+    def self.require_person
+      raise ConfigurationError, "User does not have a person id" unless @user.person_id
+    end
+
+    def self.require_business
+      raise ConfigurationError, "User does not have a business id" unless @user.business_id
+    end
   end
 end

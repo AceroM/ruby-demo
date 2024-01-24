@@ -12,8 +12,14 @@ module Synctera
       else
         next_page_token = nil
         params = { page_token: next_page_token, limit: limit }
-        params[:business_id] = @user.business_id if type == "business"
-        params[:person_id] = @user.person_id if type == "person"
+        if type == "business"
+          Client.require_business
+          params[:business_id] = @user.business_id
+        end
+        if type == "person"
+          Client.require_person
+          params[:person_id] = @user.person_id
+        end
         loop do
           response = @client.get("/v0/disclosures", params.compact)
           data += response.dig("disclosures")
@@ -25,8 +31,9 @@ module Synctera
     end
 
     def accept_person_disclosure(type)
+      Client.require_person
       @client.post("/v0/disclosures", {
-        person_id: @user.synctera_person.platform_id,
+        person_id: @user.person_id,
         type: type,
         version: "1.0",
         event_type: "ACKNOWLEDGED",
@@ -57,8 +64,8 @@ module Synctera
           user.disclosures.upsert_all(
             disclosures_to_upsert.map do |disclosure|
               attributes(disclosure).merge({
-                synctera_person_id: disclosure["person_id"] ? user.synctera_person.id : nil,
-                synctera_business_id: disclosure["business_id"] ? user.synctera_business.id : nil
+                synctera_person_id: disclosure["person_id"] ? user.person_id : nil,
+                synctera_business_id: disclosure["business_id"] ? user.business_id : nil
               }).compact
             end,
             unique_by: :platform_id

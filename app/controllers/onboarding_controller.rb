@@ -14,17 +14,20 @@ class OnboardingController < ApplicationController
     if @subscription.saas_plan?
       return render_or_redirect "integrations"
     end
+    if step == "welcome"
+      set_required_disclosures
+    end
     render_or_redirect(params[:page], step)
   end
 
   def update
     case step
     when "welcome"
+      set_required_disclosures
       disclosures = %i[terms_of_service kyc_data_collection]
       unless disclosures.all? { |d| params[d] == "1" }
         return redirect_to onboarding_path(page: "welcome"), notice: "all not accepted"
       end
-      required_disclosures = %w[E_SIGN CARDHOLDER_AGREEMENT TERMS_AND_CONDITIONS PRIVACY_NOTICE KYC_DATA_COLLECTION]
       client = Synctera::Client.new(user: Current.user)
       if Current.user.synctera?
         user_disclosures = client.disclosures.list
@@ -35,7 +38,7 @@ class OnboardingController < ApplicationController
         Current.user.create_synctera_business(platform_id: business["id"], data: business)
         user_disclosures = client.disclosures.list
       end
-      (required_disclosures - user_disclosures.map { |d| d["type"] }).each do |disclosure|
+      (@required_disclosures.map { |d| d["type"] } - user_disclosures.map { |d| d["type"] }).each do |disclosure|
         res = client.disclosures.accept_person_disclosure(disclosure)
         puts res
       end
@@ -71,9 +74,43 @@ class OnboardingController < ApplicationController
     redirect_to dashboard_path if Current.onboarded? && active
   end
 
+  def set_required_disclosures
+    @required_disclosures = [
+      {
+        "type": "E_SIGN",
+        "title": "E-Sign Consent",
+        "form_id": :e_sign_consent,
+        "url": terms_url
+      },
+      {
+        "type": "CARDHOLDER_AGREEMENT",
+        "title": "Cardholder Agreement",
+        "form_id": :cardholder_agreement,
+        "url": terms_url
+      },
+      {
+        "type": "TERMS_AND_CONDITIONS",
+        "title": "Terms and Conditions",
+        "form_id": :terms_and_conditions,
+        "url": terms_url
+      },
+      {
+        "type": "PRIVACY_NOTICE",
+        "title": "Privacy Notice",
+        "form_id": :privacy_notice,
+        "url": terms_url
+      },
+      {
+        "type": "KYC_DATA_COLLECTION",
+        "title": "KYC Data Collection",
+        "form_id": :kyc_data_collection,
+        "url": terms_url
+      }
+    ]
+  end
+
   def step
-    flow = Current.user.onboarding_flow
-    @flow = flow || OnboardingFlow.create(user: Current.user)
+    @flow = Current.user.onboarding_flow || OnboardingFlow.create(user: Current.user)
     if @flow.plaid_connection_time
       "finished"
     elsif @flow.kyb_code == "ACCEPTED"
