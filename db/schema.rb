@@ -194,14 +194,16 @@ ActiveRecord::Schema[7.1].define(version: 2024_01_22_001039) do
 
   create_table "synctera_disclosures", force: :cascade do |t|
     t.string "platform_id"
-    t.string "disclosure_type"
+    t.string "platform_type"
     t.string "event_type"
     t.jsonb "data"
+    t.datetime "platform_last_updated_at", precision: nil
     t.bigint "user_id", null: false
-    t.bigint "synctera_person_id", null: false
-    t.bigint "synctera_business_id", null: false
+    t.bigint "synctera_person_id"
+    t.bigint "synctera_business_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["platform_id"], name: "index_synctera_disclosures_on_platform_id", unique: true
     t.index ["synctera_business_id"], name: "index_synctera_disclosures_on_synctera_business_id"
     t.index ["synctera_person_id"], name: "index_synctera_disclosures_on_synctera_person_id"
     t.index ["user_id"], name: "index_synctera_disclosures_on_user_id"

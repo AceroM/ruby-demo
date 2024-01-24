@@ -5,24 +5,23 @@ module Synctera
       @user = user
     end
 
-    def list(paginate: false, limit: nil)
+    def list(paginate: false, limit: nil, type: nil)
       data = []
-      next_page_token = nil
-
-      loop do
-        response = @client.get("/v0/disclosures", {
-          business_id: @user&.synctera_business&.platform_id,
-          person_id: @user&.synctera_person&.platform_id,
-          acknowledging_person_id: @user&.synctera_person&.platform_id,
-          page_token: next_page_token,
-          limit: limit
-        }.compact)
-        data += response.dig("disclosures")
-        next_page_token = response.dig("next_page_token")
-        break if next_page_token.nil? || !paginate
+      if @user && type.nil?
+        raise ArgumentError, "Must specify type when user is present"
+      else
+        next_page_token = nil
+        params = { page_token: next_page_token, limit: limit }
+        params[:business_id] = @user.business_id if type == "business"
+        params[:person_id] = @user.person_id if type == "person"
+        loop do
+          response = @client.get("/v0/disclosures", params.compact)
+          data += response.dig("disclosures")
+          next_page_token = response.dig("next_page_token")
+          break if next_page_token.nil? || !paginate
+        end
+        data
       end
-
-      data
     end
 
     def accept_person_disclosure(type)
@@ -36,20 +35,52 @@ module Synctera
     end
 
     def self.sync_all(user)
-      puts "hello"
       client = Synctera::Client.new(user: user)
-      disclosures = client.disclosures.list
-      puts disclosures
-      # user.synctera_disclosures.upsert_all disclosures.map do |d|
-      #   {
-      #     platform_id: d["id"],
-      #     disclosure_type: d["type"],
-      #     event_type: d["event_type"],
-      #     synctera_person: user.synctera_person,
-      #     synctera_business: user.synctera_business,
-      #     data: d.slice("creation_time", "disclosure_date", "last_updated_time")
-      #   }
-      # end
+      disclosures = user.disclosures
+      person_disclosures = client.disclosures.list(type: "person")
+      business_disclosures = client.disclosures.list(type: "business")
+      [person_disclosures, business_disclosures].each do |platform_disclosures|
+        disclosures_to_upsert = platform_disclosures - disclosures
+        disclosures_to_delete = disclosures.filter do |disclosure|
+          platform_disclosures.none? { |d| d["id"] == disclosure.platform_id }
+        end
+        if disclosures_to_delete.any?
+          user.disclosures.where(platform_id: disclosures_to_delete.map(&:platform_id)).delete_all
+        end
+        changed_disclosures = platform_disclosures.filter do |disclosure|
+          disclosures.any? { |d| d.platform_id == disclosure["id"] && d.platform_last_updated_at != disclosure["last_updated_time"] }
+        end
+        if changed_disclosures.any?
+          disclosures_to_upsert.concat(changed_disclosures)
+        end
+        if disclosures_to_upsert.any?
+          user.disclosures.upsert_all(
+            disclosures_to_upsert.map do |disclosure|
+              attributes(disclosure).merge({
+                synctera_person_id: disclosure["person_id"] ? user.synctera_person.id : nil,
+                synctera_business_id: disclosure["business_id"] ? user.synctera_business.id : nil
+              }).compact
+            end,
+            unique_by: :platform_id
+          )
+        end
+      end
+    end
+
+    private
+
+    def self.excluded_keys
+      %w[id type event_type last_updated_time person_id business_id]
+    end
+
+    def self.attributes(disclosure)
+      {
+        platform_id: disclosure["id"],
+        platform_type: disclosure["type"],
+        event_type: disclosure["event_type"],
+        platform_last_updated_at: disclosure["last_updated_time"],
+        data: disclosure.except(*excluded_keys)
+      }
     end
   end
 end

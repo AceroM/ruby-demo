@@ -7,6 +7,8 @@ class User < ApplicationRecord
   has_one :synctera_business, dependent: :destroy
   has_many :synctera_disclosures, dependent: :destroy
 
+  alias_attribute :disclosures, :synctera_disclosures
+
   devise :otp_authenticatable, :database_authenticatable, :registerable,
     :recoverable, :rememberable, :validatable, :lockable, :timeoutable, :confirmable, :trackable
 
@@ -39,6 +41,14 @@ class User < ApplicationRecord
 
   def synctera?
     synctera_person.present? || synctera_business.present?
+  end
+
+  def person_id
+    synctera_person.try(:platform_id)
+  end
+
+  def business_id
+    synctera_business.try(:platform_id)
   end
 
   def admin?
