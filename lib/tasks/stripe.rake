@@ -3,7 +3,7 @@
 namespace :stripe do
   desc "List all plans you have synced from stripe"
   task plans: [:environment] do |task, _args|
-    puts STRIPE_PLANS
+    puts STRIPE_PLAN
   end
   desc "Sync subscription states from Stripe"
   task sync: [:environment] do |task, _args|
@@ -22,7 +22,7 @@ namespace :stripe do
       list = User.all
     end
     list.each do |user|
-      next unless user.customer.processor == "stripe"
+      next unless user.customer.try(:processor) == "stripe"
       Stripe::PaymentMethod.list(customer: user.customer.processor_id).each do |method|
         Pay::Stripe::PaymentMethod.sync(method.id)
       end

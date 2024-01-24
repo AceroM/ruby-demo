@@ -2,7 +2,7 @@ class User < ApplicationRecord
   has_prefix_id :usr
   broadcasts_refreshes
   pay_customer
-  has_one :user_onboarding, dependent: :destroy
+  has_one :onboarding_flow, dependent: :destroy
   has_one :synctera_person, dependent: :destroy
   has_one :synctera_business, dependent: :destroy
   has_many :synctera_disclosures, dependent: :destroy

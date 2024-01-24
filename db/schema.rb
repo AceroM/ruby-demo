@@ -92,6 +92,23 @@ ActiveRecord::Schema[7.1].define(version: 2024_01_22_001039) do
     t.index ["scheduled_at"], name: "index_good_jobs_on_scheduled_at", where: "(finished_at IS NULL)"
   end
 
+  create_table "onboarding_flows", force: :cascade do |t|
+    t.boolean "accepted_disclosures"
+    t.string "phone_number"
+    t.boolean "person_organization_linked"
+    t.boolean "person_address_saved"
+    t.boolean "business_info_saved"
+    t.boolean "business_info_collected"
+    t.string "kyc_code"
+    t.string "kyb_code"
+    t.boolean "virtual_account_created"
+    t.datetime "plaid_connection_time"
+    t.bigint "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_onboarding_flows_on_user_id"
+  end
+
   create_table "pay_charges", force: :cascade do |t|
     t.bigint "customer_id", null: false
     t.bigint "subscription_id"
@@ -218,23 +235,6 @@ ActiveRecord::Schema[7.1].define(version: 2024_01_22_001039) do
     t.index ["user_id"], name: "index_synctera_people_on_user_id"
   end
 
-  create_table "user_onboardings", force: :cascade do |t|
-    t.boolean "accepted_disclosures"
-    t.string "phone_number"
-    t.boolean "person_organization_linked"
-    t.boolean "person_address_saved"
-    t.boolean "business_info_saved"
-    t.boolean "business_info_collected"
-    t.string "kyc_code"
-    t.string "kyb_code"
-    t.boolean "virtual_account_created"
-    t.datetime "plaid_connection_time"
-    t.bigint "user_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["user_id"], name: "index_user_onboardings_on_user_id"
-  end
-
   create_table "users", force: :cascade do |t|
     t.string "name"
     t.boolean "suspended"
@@ -279,6 +279,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_01_22_001039) do
     t.index ["unlock_token"], name: "index_users_on_unlock_token", unique: true
   end
 
+  add_foreign_key "onboarding_flows", "users"
   add_foreign_key "pay_charges", "pay_customers", column: "customer_id"
   add_foreign_key "pay_charges", "pay_subscriptions", column: "subscription_id"
   add_foreign_key "pay_payment_methods", "pay_customers", column: "customer_id"
@@ -288,5 +289,4 @@ ActiveRecord::Schema[7.1].define(version: 2024_01_22_001039) do
   add_foreign_key "synctera_disclosures", "synctera_people"
   add_foreign_key "synctera_disclosures", "users"
   add_foreign_key "synctera_people", "users"
-  add_foreign_key "user_onboardings", "users"
 end

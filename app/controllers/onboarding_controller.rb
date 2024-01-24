@@ -72,8 +72,8 @@ class OnboardingController < ApplicationController
   end
 
   def step
-    flow = Current.user.user_onboarding
-    @flow = flow || UserOnboarding.create(user: Current.user)
+    flow = Current.user.onboarding_flow
+    @flow = flow || OnboardingFlow.create(user: Current.user)
     if @flow.plaid_connection_time
       "finished"
     elsif @flow.kyb_code == "ACCEPTED"

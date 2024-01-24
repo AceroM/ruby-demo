@@ -1,6 +1,6 @@
-class CreateUserOnboardings < ActiveRecord::Migration[7.1]
+class CreateOnboardingFlows < ActiveRecord::Migration[7.1]
   def change
-    create_table :user_onboardings do |t|
+    create_table :onboarding_flows do |t|
       t.boolean :accepted_disclosures
       t.string :phone_number
       t.boolean :person_organization_linked
