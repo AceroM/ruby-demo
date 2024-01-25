@@ -24,33 +24,33 @@ class OnboardingController < ApplicationController
     case step
     when "welcome"
       set_required_disclosures
-      disclosures = %i[terms_of_service kyc_data_collection]
-      unless disclosures.all? { |d| params[d] == "1" }
+      unless @required_disclosures.all? { |d| params[d[:form_id]] == "1" }
         return redirect_to onboarding_path(page: "welcome"), notice: "all not accepted"
       end
       client = Synctera::Client.new(user: Current.user)
       if Current.user.synctera?
-        user_disclosures = client.disclosures.list
+        user_disclosures = client.disclosures.list(type: "person")
       else
         person = client.persons.create
         business = client.businesses.create
-        Current.user.create_synctera_person(platform_id: person["id"], data: person)
-        Current.user.create_synctera_business(platform_id: business["id"], data: business)
-        user_disclosures = client.disclosures.list
+        Current.user.create_synctera_person(platform_id: person["id"], data: person.except(:id))
+        Current.user.create_synctera_business(platform_id: business["id"], data: business.except(:id))
+        user_disclosures = client.disclosures.list(type: "person")
       end
-      (@required_disclosures.map { |d| d["type"] } - user_disclosures.map { |d| d["type"] }).each do |disclosure|
-        res = client.disclosures.accept_person_disclosure(disclosure)
-        puts res
+      disclosures_to_accept = @required_disclosures.pluck(:type) - user_disclosures.pluck("type")
+      disclosures_to_accept.each do |disclosure|
+        client.disclosures.accept_person_disclosure(disclosure)
       end
       Synctera::Disclosures.sync_all(Current.user)
       @flow.update(accepted_disclosures: true)
       redirect_to onboarding_path(page: "phone_number"), notice: "Disclosures accepted"
+    when "phone_number"
     else
       redirect_to onboarding_path(page: "not_found")
     end
   rescue StandardError => e
     logger.error e.message
-    redirect_to onboarding_path(page: "welcome"), notice: "An error occurred"
+    redirect_to onboarding_path(page: "welcome"), alert: "An error occurred. Please try again or contact support."
   end
 
   private

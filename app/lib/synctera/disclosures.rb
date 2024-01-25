@@ -5,6 +5,10 @@ module Synctera
       @user = user
     end
 
+    def get(id)
+      @client.get("/v0/disclosures", { id: })
+    end
+
     def list(paginate: false, limit: nil, type: nil)
       data = []
       if @user && type.nil?
@@ -13,11 +17,11 @@ module Synctera
         next_page_token = nil
         params = { page_token: next_page_token, limit: limit }
         if type == "business"
-          Client.require_business
+          @client.require_business
           params[:business_id] = @user.business_id
         end
         if type == "person"
-          Client.require_person
+          @client.require_person
           params[:person_id] = @user.person_id
         end
         loop do
@@ -31,7 +35,7 @@ module Synctera
     end
 
     def accept_person_disclosure(type)
-      Client.require_person
+      @client.require_person
       @client.post("/v0/disclosures", {
         person_id: @user.person_id,
         type: type,
@@ -43,35 +47,34 @@ module Synctera
 
     def self.sync_all(user)
       client = Synctera::Client.new(user: user)
-      disclosures = user.disclosures
+      disclosures = user.disclosures.all
       person_disclosures = client.disclosures.list(type: "person")
       business_disclosures = client.disclosures.list(type: "business")
       [person_disclosures, business_disclosures].each do |platform_disclosures|
-        disclosures_to_upsert = platform_disclosures - disclosures
+        disclosures_to_insert = platform_disclosures - disclosures
+        if disclosures_to_insert.any?
+          attributes = get_attributes(user)
+          user.disclosures.create(disclosures_to_insert.map(&attributes))
+        end
         disclosures_to_delete = disclosures.filter do |disclosure|
           platform_disclosures.none? { |d| d["id"] == disclosure.platform_id }
         end
         if disclosures_to_delete.any?
           user.disclosures.where(platform_id: disclosures_to_delete.map(&:platform_id)).delete_all
         end
-        changed_disclosures = platform_disclosures.filter do |disclosure|
+        disclosures_to_upsert = platform_disclosures.filter do |disclosure|
           disclosures.any? { |d| d.platform_id == disclosure["id"] && d.platform_last_updated_at != disclosure["last_updated_time"] }
         end
-        if changed_disclosures.any?
-          disclosures_to_upsert.concat(changed_disclosures)
-        end
         if disclosures_to_upsert.any?
-          user.disclosures.upsert_all(
-            disclosures_to_upsert.map do |disclosure|
-              attributes(disclosure).merge({
-                synctera_person_id: disclosure["person_id"] ? user.person_id : nil,
-                synctera_business_id: disclosure["business_id"] ? user.business_id : nil
-              }).compact
-            end,
-            unique_by: :platform_id
-          )
+          attributes = get_attributes(user)
+          user.disclosures.upsert_all(disclosures_to_upsert.map(&attributes), unique_by: :platform_id)
         end
       end
+    end
+
+    def self.sync(user:, id:)
+      client = Synctera::Client.new(user: user)
+      disclosure = client.get(id)
     end
 
     private
@@ -80,14 +83,18 @@ module Synctera
       %w[id type event_type last_updated_time person_id business_id]
     end
 
-    def self.attributes(disclosure)
-      {
-        platform_id: disclosure["id"],
-        platform_type: disclosure["type"],
-        event_type: disclosure["event_type"],
-        platform_last_updated_at: disclosure["last_updated_time"],
-        data: disclosure.except(*excluded_keys)
-      }
+    def self.get_attributes(user)
+      lambda do |disclosure|
+        {
+          platform_id: disclosure["id"],
+          platform_type: disclosure["type"],
+          event_type: disclosure["event_type"],
+          platform_last_updated_at: disclosure["last_updated_time"],
+          data: disclosure.except(*excluded_keys)
+          synctera_person_id: disclosure["person_id"] == user.person_id ? user.person_id : nil,
+          synctera_business_id: disclosure["business_id"] == user.business_id ? user.business_id : nil
+        }.compact
+      end
     end
   end
 end

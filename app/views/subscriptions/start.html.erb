@@ -6,7 +6,7 @@
   </div>
   <div class="card__body subscription-plans">
     <% @stripe_plans.each do |plan| %>
-      <div class="subscription-plan">
+      <div class="subscription-plans__item">
         <div>
           <h3><%= plan[:name] %></h3>
           <p><%= plan[:description] %></p>

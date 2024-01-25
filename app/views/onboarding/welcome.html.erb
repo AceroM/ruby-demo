@@ -5,10 +5,10 @@
     <h2 class="heading-2">Welcome</h2>
   </div>
   <div class="card__body">
-    <p>To get started, please accept the following disclosures</p>
-    <div>
+    <p>To get started, please accept the following disclosures:</p>
+    <div class="disclosures">
       <% @required_disclosures.each do |disclosure| %>
-        <div class="field">
+        <div class="field disclosure">
           <%= f.label disclosure[:form_id], class: "checkbox" do %>
             <%= f.check_box disclosure[:form_id] %>
             <span>I agree to the <%= link_to disclosure[:title], disclosure[:url], class: "link" %></span>
