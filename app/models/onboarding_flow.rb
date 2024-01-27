@@ -26,9 +26,17 @@ class OnboardingFlow < ApplicationRecord
     end
   end
 
+  def phone_verification_time
+    Kredis.datetime("verifying_phone:#{prefix_id}").value
+  end
+
+  def verifying_phone?
+    return false if phone_number.nil?
+    Kredis.datetime("verifying_phone:#{prefix_id}").value.present?
+  end
+
   def set_phone_verifying
-    date = Kredis.datetime "verifying_phone:#{prefix_id}", expires_in: 10.minutes
-    date.value = Time.current
+    Kredis.datetime("verifying_phone:#{prefix_id}", expires_in: 10.minutes).value = Time.current
   end
 
   def set_phone_verified
@@ -37,14 +45,14 @@ class OnboardingFlow < ApplicationRecord
 
   alias_method :retry_phone_verification, :set_phone_verified
 
-  def phone_verification_time
-    Kredis.datetime("verifying_phone:#{prefix_id}").value
+  def business_type
+    Kredis.string("business_type:#{prefix_id}").value
   end
 
-  def verifying_phone?
-    return false if phone_number.nil?
-    date = Kredis.datetime "verifying_phone:#{prefix_id}"
-    date.value.present?
+  alias_method :business_type?, :business_type
+
+  def set_business_type(business_type)
+    Kredis.string("business_type:#{prefix_id}").value = business_type
   end
 
   def self.required_disclosures
