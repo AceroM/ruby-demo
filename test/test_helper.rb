@@ -10,6 +10,19 @@ module ActiveSupport
     # Setup all fixtures in test/fixtures/*.yml for all tests in alphabetical order.
     fixtures :all
 
-    # Add more helper methods to be used by all tests here...
+    include Warden::Test::Helpers
+    Warden.test_mode!
+
+    teardown do
+      Warden.test_reset!
+    end
+
+    def log_in(user, opts = {})
+      login_as(user, opts)
+    end
+
+    def log_out(*scopes)
+      logout(*scopes)
+    end
   end
 end

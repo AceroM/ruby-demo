@@ -90,9 +90,9 @@ module Synctera
           platform_type: disclosure["type"],
           event_type: disclosure["event_type"],
           platform_last_updated_at: disclosure["last_updated_time"],
-          data: disclosure.except(*excluded_keys)
           synctera_person_id: disclosure["person_id"] == user.person_id ? user.person_id : nil,
-          synctera_business_id: disclosure["business_id"] == user.business_id ? user.business_id : nil
+          synctera_business_id: disclosure["business_id"] == user.business_id ? user.business_id : nil,
+          data: disclosure.except(*excluded_keys)
         }.compact
       end
     end

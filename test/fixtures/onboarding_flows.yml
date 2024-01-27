@@ -1,19 +1,19 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
-one:
-  accepted_disclosures: MyString
-  phone_number: MyString
+disclosures_page:
+  accepted_disclosures: false
+  phone_number: null
   person_organization_linked: MyString
-  person_address_saved: MyString
-  business_info_saved: MyString
+  person_address_saved: false
+  business_info_saved: false
   business_info_collected: MyString
   kyc_code: MyString
   kyb_code: MyString
   virtual_account_created: MyString
   plaid_connection_time: MyString
-  user: one
+  user: joe
 
-two:
+phone_page:
   accepted_disclosures: MyString
   phone_number: MyString
   person_organization_linked: MyString
@@ -24,4 +24,4 @@ two:
   kyb_code: MyString
   virtual_account_created: MyString
   plaid_connection_time: MyString
-  user: two
+  user: mary

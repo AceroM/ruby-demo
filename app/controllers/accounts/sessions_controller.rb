@@ -1,7 +1,7 @@
 class Accounts::SessionsController < Devise::SessionsController
   layout "devise"
 
-  after_action :remove_notice, only: [:create, :destroy]
+  after_action :remove_notice, only: %i[create destroy]
 
   def sign_in_as
     authenticate_user!

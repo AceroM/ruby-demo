@@ -1,3 +1,79 @@
 <% title "Phone Number" %>
 
-<h2>Phone number</h2>
+<%
+  verification_time = @flow.phone_verification_time
+  time_left = 30 - (Time.current - verification_time).ceil if @flow.verifying_phone?
+%>
+
+<%= form_with url: onboarding_path, method: :patch, data: { controller: "otp", "otp-code-length-value": 6 }, class: "card content-grid__auth content-grid__content" do |f| %>
+  <div class="card__header">
+    <h2 class="heading-2">Phone Number Verification</h2>
+  </div>
+  <% if @flow.verifying_phone? %>
+    <div class="card__body">
+      <% if time_left > 0 %>
+        <p>Please wait <%= time_left %> seconds before requesting a new code.</p>
+      <% end %>
+      <p>Please enter the confirmation code that has been texted to you:</p>
+      <div class="field">
+        <%= f.label :code, "Confirmation Code", class: "label" %>
+        <div class="otp-container">
+          <% (1..6).each do |idx| %>
+            <input
+              type="text"
+              maxlength="1"
+              id="otp-digit-<%= idx %>"
+              data-otp-target="otpField"
+              <%= "autofocus" if idx == 1 %>
+              data-action="keydown->otp#handleKeyDown keyup->otp#handleKeyUp input->otp#handleInput"/>
+          <% end %>
+        </div>
+        <%= f.hidden_field :code, :value => "", "data-otp-target": "tokenField" %>
+      </div>
+    </div>
+    <div class="card__footer">
+      <%= button_tag "Try Again", id: "request-new-code", type: "button", method: :delete, disabled: time_left > 0, class: "button button--outline" %>
+      <%= submit_tag "Confirm Code", class: "button button--primary button--pad-sm" %>
+    </div>
+  <% else %>
+    <div class="card__body">
+      <p>Please verify your phone number below: </p>
+      <div class="field">
+        <%= f.label :phone_number, "Phone Number", class: "label" %>
+        <div class="input-wrapper input-wrapper--has-add-on">
+          <div class="input-wrapper__add-on">+1</div>
+          <%= f.phone_field :phone_number, autofocus: true, autocomplete: "tel", placeholder: "(123)-456-7890", data: { controller: "mask", "mask-pattern-value": "(000)-000-0000" }, class: "input" %>
+        </div>
+        <% if @flow.errors[:phone_number].any? %>
+          <p class="field__error"><%= @flow.errors[:phone_number].first %></p>
+        <% end %>
+      </div>
+    </div>
+    <div class="card__footer">
+      <%= submit_tag "Verify", class: "button button--primary button--pad-sm" %>
+    </div>
+  <% end %>
+<% end %>
+
+<% if @flow.verifying_phone? && time_left > 0 %>
+  <script>
+    setTimeout(function () {
+      const button = document.getElementById("request-new-code")
+      if (button) {
+        button.disabled = false
+      }
+    }, <%= time_left * 1000 %>)
+  </script>
+<% end %>
+
+<script type="module">
+  import { destroy } from "@rails/request.js"
+  document.addEventListener("DOMContentLoaded", function () {
+    const button = document.getElementById("request-new-code")
+    if (button) {
+      button.addEventListener("click", function () {
+        destroy("/onboarding/phone_number")
+      })
+    }
+  })
+</script>

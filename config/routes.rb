@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  resources :admin, only: [:index] do
+  resources :admin, only: %i[index] do
     collection do
       get :components
       post :show_flash
@@ -16,13 +16,13 @@ Rails.application.routes.draw do
   namespace :account do
     resource :password
   end
-  resources :onboarding, param: :page, only: [:index, :update, :show]
-  resources :settings, only: [:index] do
+  resources :onboarding, param: :page, only: %i[index show update destroy]
+  resources :settings, only: %i[index] do
     collection do
       get "billing"
     end
   end
-  resources :subscriptions, param: :plan_id, only: [:update] do
+  resources :subscriptions, param: :plan_id, only: %i[update] do
     collection do
       get "start"
       get "success"

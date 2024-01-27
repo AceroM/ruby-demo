@@ -39,3 +39,5 @@
 # Ignore locally-installed gems.
 /vendor/bundle/
 /vendor/javascript/
+
+/config/credentials/test.key

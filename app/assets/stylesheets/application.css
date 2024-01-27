@@ -821,6 +821,14 @@ a.button {
   }
 }
 
+@media (width <= 48rem) {
+  .button {
+    &.button--pad-sm {
+      padding-inline: 0.625rem;
+    }
+  }
+}
+
 .button__truncated {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -958,6 +966,15 @@ a.button {
       padding-right: 1.75rem;
     }
   }
+
+  &.input-wrapper--has-add-on {
+    display: flex;
+
+    & input {
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+    }
+  }
 }
 
 .input-wrapper__icon {
@@ -981,6 +998,18 @@ a.button {
 
 .input-wrapper__icon--right {
   right: 0.5rem;
+}
+
+.input-wrapper__add-on {
+  border: 1px solid var(--neutral-200);
+  border-top-left-radius: 0.625rem;
+  border-bottom-left-radius: 0.625rem;
+  font-size: 0.8125rem;
+  display: inline-flex;
+  align-items: center;
+  color: var(--neutral-600);
+  padding-inline: 0.625rem;
+  border-right: none;
 }
 
 .input,
@@ -1664,7 +1693,7 @@ a.button {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  margin-top: 0.25rem !important;
+  margin-top: 0.5rem !important;
 
   & > input {
     width: 100%;

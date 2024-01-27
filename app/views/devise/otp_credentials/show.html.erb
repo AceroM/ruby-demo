@@ -7,7 +7,7 @@
   </div>
   <div class="card__body">
     <% if @recovery %>
-      <div class="field'">
+      <div class="field">
         <%= f.label :token, I18n.t('recovery_prompt', :scope => 'devise.otp.submit_token'), class: "label" %>
         <div class="otp-container">
           <% (1..6).each do |idx| %>

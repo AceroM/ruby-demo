@@ -2,6 +2,7 @@ class OnboardingController < ApplicationController
   layout "onboarding"
   before_action :authenticate_and_set_user!
   before_action :set_subscription!
+  before_action :set_onboarding_flow, only: %i[show update destroy]
 
   SAAS_PAGES = %w[integrations connect_store finished]
   BANK_PAGES = %w[welcome info disclosures phone_number address business_info kyc kyb link_plaid finished]
@@ -14,17 +15,13 @@ class OnboardingController < ApplicationController
     if @subscription.saas_plan?
       return render_or_redirect "integrations"
     end
-    if step == "welcome"
-      set_required_disclosures
-    end
-    render_or_redirect(params[:page], step)
+    render_or_redirect(params[:page], @flow.step)
   end
 
   def update
-    case step
+    case @flow.step
     when "welcome"
-      set_required_disclosures
-      unless @required_disclosures.all? { |d| params[d[:form_id]] == "1" }
+      unless @flow.required_disclosures.all? { |d| params[d[:form_id]] == "1" }
         return redirect_to onboarding_path(page: "welcome"), notice: "all not accepted"
       end
       client = Synctera::Client.new(user: Current.user)
@@ -37,7 +34,7 @@ class OnboardingController < ApplicationController
         Current.user.create_synctera_business(platform_id: business["id"], data: business.except(:id))
         user_disclosures = client.disclosures.list(type: "person")
       end
-      disclosures_to_accept = @required_disclosures.pluck(:type) - user_disclosures.pluck("type")
+      disclosures_to_accept = @flow.required_disclosures.pluck(:type) - user_disclosures.pluck("type")
       disclosures_to_accept.each do |disclosure|
         client.disclosures.accept_person_disclosure(disclosure)
       end
@@ -45,11 +42,55 @@ class OnboardingController < ApplicationController
       @flow.update(accepted_disclosures: true)
       redirect_to onboarding_path(page: "phone_number"), notice: "Disclosures accepted"
     when "phone_number"
+      if @flow.verifying_phone?
+        unless params[:code].present? && params[:code].match?(/\A\d{6}\z/)
+          return redirect_to onboarding_path(page: "phone_number"), alert: "Please enter a valid code"
+        end
+        verify_code_response = Rails.cache.fetch("twilio-#{@flow.phone_number}", expires_in: 5.seconds) do
+          Twilio.verify_code(@flow.phone_number, params[:code])
+        end
+        if verify_code_response.success? && verify_code_response.body["status"] == "approved"
+          @flow.set_phone_verified
+          @flow.update(phone_verified: Time.current)
+          redirect_to onboarding_path(page: "info")
+        elsif verify_code_response.success? && verify_code_response.body["status"] == "pending"
+          redirect_to onboarding_path(page: "phone_number"), alert: "Please wait a few seconds and try again."
+        else
+          redirect_to onboarding_path(page: "phone_number"), alert: "An error occurred verifying your code. Please try again or contact support."
+        end
+      else
+        formatted_number = "+1#{params[:phone_number].gsub(/\D/, '')}"
+        unless formatted_number.match?(/\A\+1\d{10}\z/)
+          @flow.errors.add(:phone_number, "must be 10 digits")
+          return render "onboarding/phone_number", status: :unprocessable_entity
+        end
+        sent_code_response = Rails.cache.fetch("twilio-#{formatted_number}", expires_in: 5.seconds) do
+          Twilio.send_code(formatted_number)
+        end
+        if sent_code_response.success?
+          @flow.set_phone_verifying
+          @flow.update(phone_number: formatted_number)
+          redirect_to onboarding_path(page: "phone_number")
+        else
+          redirect_to onboarding_path(page: "phone_number"), alert: "An error occurred sending a verification code. Please try again or contact support."
+        end
+      end
     else
       redirect_to onboarding_path(page: "not_found")
     end
   rescue StandardError => e
-    logger.error e.message
+    redirect_to onboarding_path(page: "welcome"), alert: "An error occurred. Please try again or contact support."
+  end
+
+  def destroy
+    case @flow.step
+    when "phone_number"
+      @flow.retry_phone_verification
+      redirect_to onboarding_path(page: "phone_number")
+    else
+      redirect_to onboarding_path(page: "not_found")
+    end
+  rescue
     redirect_to onboarding_path(page: "welcome"), alert: "An error occurred. Please try again or contact support."
   end
 
@@ -60,7 +101,7 @@ class OnboardingController < ApplicationController
     if pages.include?(path) && path == step
       render "onboarding/#{path}"
     elsif pages.include?(path)
-      redirect_to onboarding_path(page: step), notice: "You have not made it to this step yet."
+      redirect_to onboarding_path(page: step)
     else
       render "onboarding/not_found"
     end
@@ -74,63 +115,7 @@ class OnboardingController < ApplicationController
     redirect_to dashboard_path if Current.onboarded? && active
   end
 
-  def set_required_disclosures
-    @required_disclosures = [
-      {
-        "type": "E_SIGN",
-        "title": "E-Sign Consent",
-        "form_id": :e_sign_consent,
-        "url": terms_url
-      },
-      {
-        "type": "CARDHOLDER_AGREEMENT",
-        "title": "Cardholder Agreement",
-        "form_id": :cardholder_agreement,
-        "url": terms_url
-      },
-      {
-        "type": "TERMS_AND_CONDITIONS",
-        "title": "Terms and Conditions",
-        "form_id": :terms_and_conditions,
-        "url": terms_url
-      },
-      {
-        "type": "PRIVACY_NOTICE",
-        "title": "Privacy Notice",
-        "form_id": :privacy_notice,
-        "url": terms_url
-      },
-      {
-        "type": "KYC_DATA_COLLECTION",
-        "title": "KYC Data Collection",
-        "form_id": :kyc_data_collection,
-        "url": terms_url
-      }
-    ]
-  end
-
-  def step
+  def set_onboarding_flow
     @flow = Current.user.onboarding_flow || OnboardingFlow.create(user: Current.user)
-    if @flow.plaid_connection_time
-      "finished"
-    elsif @flow.kyb_code == "ACCEPTED"
-      "link_plaid"
-    elsif @flow.kyc_code == "ACCEPTED"
-      "kyb"
-    elsif @flow.business_info_collected
-      "kyc"
-    elsif @flow.business_info_saved
-      "business_info"
-    elsif @flow.person_address_saved
-      "business_info"
-    elsif @flow.person_organization_linked
-      "address"
-    elsif @flow.phone_number
-      "info"
-    elsif @flow.accepted_disclosures
-      "phone_number"
-    else
-      "welcome"
-    end
   end
 end

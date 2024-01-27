@@ -2,7 +2,7 @@ class SubscriptionsController < ApplicationController
   layout "onboarding"
 
   before_action :authenticate_and_set_user!
-  before_action :set_subscription!, only: [:start, :success]
+  before_action :set_subscription!, only: %i[start success]
 
   def start
     Current.user.set_payment_processor :stripe

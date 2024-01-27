@@ -1,0 +1,21 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+<% password = "Password123!" %>
+
+joe:
+  name: Joe
+  email: <%= Faker::Internet.unique.email %>
+  encrypted_password: <%= Devise::Encryptor.digest(User, password)  %>
+  admin_clearance: 2
+  confirmed_at: <%= DateTime.now %>
+  locale: en
+  signed_tos_on: <%= Date.today %>
+
+mary:
+  name: Mary
+  email: <%= Faker::Internet.unique.email %>
+  encrypted_password: <%= Devise::Encryptor.digest(User, password)  %>
+  admin_clearance: 2
+  confirmed_at: <%= DateTime.now %>
+  locale: en
+  signed_tos_on: <%= Date.today %>

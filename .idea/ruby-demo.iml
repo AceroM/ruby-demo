@@ -1168,6 +1168,28 @@
       </library>
     </orderEntry>
     <orderEntry type="module-library">
+      <library name="mocha (v2.1.0) [path][gem]" type="rubylib">
+        <properties>
+          <option name="version" value="4" />
+        </properties>
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/vendor/bundle/ruby/3.2.0/gems/mocha-2.1.0/lib" />
+          <root url="file://$MODULE_DIR$/vendor/bundle/ruby/3.2.0/gems/mocha-2.1.0/.github" />
+          <root url="file://$MODULE_DIR$/vendor/bundle/ruby/3.2.0/gems/mocha-2.1.0/gemfiles" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="file://$MODULE_DIR$/vendor/bundle/ruby/3.2.0/gems/mocha-2.1.0/lib" />
+          <root url="file://$MODULE_DIR$/vendor/bundle/ruby/3.2.0/gems/mocha-2.1.0/.github" />
+          <root url="file://$MODULE_DIR$/vendor/bundle/ruby/3.2.0/gems/mocha-2.1.0/gemfiles" />
+        </SOURCES>
+        <excluded>
+          <root url="file://$MODULE_DIR$/vendor/bundle/ruby/3.2.0/gems/mocha-2.1.0/.github" />
+          <root url="file://$MODULE_DIR$/vendor/bundle/ruby/3.2.0/gems/mocha-2.1.0/gemfiles" />
+        </excluded>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
       <library name="msgpack (v1.7.2) [path][gem]" type="rubylib">
         <properties>
           <option name="version" value="4" />
@@ -3106,7 +3128,14 @@
             <subtasks>
               <RakeTaskImpl description="List all plans you have synced from stripe" fullCommand="stripe:plans" id="plans" />
               <RakeTaskImpl description="Sync subscription states from Stripe" fullCommand="stripe:sync" id="sync" />
+              <RakeTaskImpl description="Sync payment method states from Stripe" fullCommand="stripe:sync_methods[id]" id="sync_methods[id]" />
               <RakeTaskImpl description="Sync plans config file with the ons in Stripe" fullCommand="stripe:sync_plans" id="sync_plans" />
+              <RakeTaskImpl description="" fullCommand="stripe:sync_methods" id="sync_methods" />
+            </subtasks>
+          </RakeTaskImpl>
+          <RakeTaskImpl id="synctera">
+            <subtasks>
+              <RakeTaskImpl description="Synchronize disclosures for all users" fullCommand="synctera:sync_disclosures" id="sync_disclosures" />
             </subtasks>
           </RakeTaskImpl>
           <RakeTaskImpl description="Run all tests in test folder except system ones" fullCommand="test" id="test" />

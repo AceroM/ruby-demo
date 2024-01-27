@@ -13,6 +13,8 @@
   <%= stylesheet_link_tag "globals", "data-turbo-track": "reload" %>
   <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
   <%= javascript_importmap_tags %>
+  <%= turbo_refreshes_with method: :morph, scroll: :preserve %>
+  <%= content_for :head %>
 </head>
 
 <body class="container container--onboarding">
@@ -23,7 +25,7 @@
   <header class="header">
     <h2 class="heading-1">Ruby</h2>
     <div data-controller="dropdown" data-dropdown-placement-value="bottom-end">
-      <button data-dropdown-target="reference" data-action="click->dropdown#toggle click@window->dropdown#hide" class="avatar">
+      <button tabindex="-1" data-dropdown-target="reference" data-action="click->dropdown#toggle click@window->dropdown#hide" class="avatar">
         <%= Current.user.name[0..1].upcase %>
       </button>
       <div data-dropdown-target="floating" class="d-none">
@@ -46,12 +48,10 @@
       </div>
     </div>
   </header>
-  <main class="content-grid__content">
-    <%= yield %>
-    <% if @load_stripe %>
-      <script src="https://js.stripe.com/v3/" defer></script>
-    <% end %>
-  </main>
+  <%= yield %>
+  <% if @load_stripe %>
+    <script src="https://js.stripe.com/v3/" defer></script>
+  <% end %>
 </div>
 <%= render "shared/font_awesome" %>
 </body>
