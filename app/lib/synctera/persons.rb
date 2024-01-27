@@ -21,15 +21,15 @@ module Synctera
       }.to_json)
     end
 
-    def save_info(attributes)
+    def save_info(params)
       @client.require_person
       @client.patch("/v0/persons/#{@user.person_id}", {
         email: @user.email,
         phone_number: @user.onboarding_flow.phone_number,
-        first_name: attributes.first_name,
-        last_name: attributes.last_name,
-        dob: attributes.dob,
-        ssn: attributes.ssn,
+        first_name: params.first_name,
+        last_name: params.last_name,
+        dob: params.dob,
+        ssn: params.ssn,
         is_customer: true
       }.to_json)
     end
@@ -37,6 +37,20 @@ module Synctera
     def activate
       @client.require_person
       @client.patch("/v0/persons/#{@user.person_id}", { status: "ACTIVE" }.to_json)
+    end
+
+    def save_address(params)
+      @client.require_person
+      @client.patch("/v0/persons/#{@user.person_id}", {
+        legal_address: {
+          address_line_1: params.address_line_one,
+          address_line_2: params.address_line_two || "",
+          city: params.city,
+          state: params.state,
+          country_code: "US",
+          postal_code: params.postal_code
+        }
+      }.to_json)
     end
 
     def self.sync(user, force_update = false)
@@ -57,7 +71,7 @@ module Synctera
     private
 
     def self.excluded_keys
-      %w[id last_updated_time ssn dob tenant ssn_source personal_ids]
+      %w[id last_updated_time ssn dob tenant ssn_source personal_ids legal_address]
     end
   end
 end

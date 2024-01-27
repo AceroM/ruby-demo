@@ -1,0 +1,47 @@
+<% title "Business Information" %>
+
+<% if @flow.business_type == "incorporated" %>
+  <%= form_with url: onboarding_path, method: :patch, class: "card content-grid__content" do |f| %>
+    <div class="card__header">
+      <h2 class="heading-2">Incorporated Business</h2>
+    </div>
+    <div class="card__body">
+      <p>foo</p>
+      <div class="field"></div>
+    </div>
+    <div class="card__footer">
+      <%= f.submit "Confirm", class: "button button--pad-sm" %>
+    </div>
+  <% end %>
+<% elsif @flow.business_type == "sole_props" %>
+  <%= form_with url: onboarding_path, method: :patch, class: "card content-grid__content" do |f| %>
+    <div class="card__header">
+      <h2 class="heading-2">Sole Proprietorship</h2>
+    </div>
+    <div class="card__body">
+      <%= f.label :business_type, "Business Type" %>
+      <%= f.radio_button :business_type, "Sole Props" %>
+    </div>
+    <div class="card__footer">
+      <%= f.submit "Confirm", class: "button button--pad-sm" %>
+    </div>
+  <% end %>
+<% else %>
+  <%= form_with url: onboarding_path, method: :patch, class: "card content-grid__content" do |f| %>
+    <div class="card__header">
+      <h2 class="heading-2">Tell us about your Business</h2>
+    </div>
+    <div class="card__body">
+      <p>Are you currently incorporated?</p>
+      <div class="card__body">
+        <%= f.radio_button :business_type, "sole_props" %>
+        <%= f.label :business_type, "Sole Props" %>
+        <%= f.radio_button :business_type, "llc" %>
+        <%= f.label :business_type, "LLC" %>
+      </div>
+    </div>
+    <div class="card__footer">
+      <%= f.submit "Confirm", class: "button button--pad-sm" %>
+    </div>
+  <% end %>
+<% end %>

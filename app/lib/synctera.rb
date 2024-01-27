@@ -11,6 +11,7 @@ module Synctera
     def call(env)
       @app.call(env)
     rescue Faraday::Error => e
+      debugger
       raise e unless e.response.is_a?(Hash)
       puts e.response[:body]
       raise SyncteraError, e.response[:body]

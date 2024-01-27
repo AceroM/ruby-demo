@@ -5,7 +5,7 @@ class OnboardingController < ApplicationController
   before_action :set_onboarding_flow, only: %i[show update destroy]
 
   SAAS_PAGES = %w[integrations connect_store finished]
-  BANK_PAGES = %w[welcome info disclosures phone_number address business_info kyc kyb link_plaid finished]
+  BANK_PAGES = %w[welcome info disclosures phone_number address business business_info kyc kyb link_plaid finished]
 
   def index
     redirect_to onboarding_path(page: "welcome")
@@ -17,6 +17,8 @@ class OnboardingController < ApplicationController
     end
     if @flow.step == "info"
       @info = PersonalInformation.new
+    elsif @flow.step == "address"
+      @address = PersonAddress.new
     end
     render_or_redirect(params[:page], @flow.step)
   end
@@ -91,6 +93,27 @@ class OnboardingController < ApplicationController
         render "onboarding/info", status: :unprocessable_entity
       end
     when "address"
+      @address = PersonAddress.new(person_address_params)
+      if @address.valid? && @address.state == "LA"
+        puts "This person is from Louisiana"
+      end
+      if @address.valid?
+        client = Synctera::Client.new(user: Current.user)
+        client.persons.save_address(@address)
+        Synctera::Persons.sync(Current.user)
+        @flow.update(person_address_saved: Time.current)
+        redirect_to onboarding_path(page: "business_info")
+      else
+        render "onboarding/address", status: :unprocessable_entity
+      end
+    when "business"
+      if @flow.business_type?
+      elsif !params[:business_type].present? || !params[:business_type].in?(%w[sole_proprietorship partnership corporation llc])
+        @flow.set_business_type(params[:business_type])
+        redirect_to onboarding_path(page: "business")
+      else
+        render "onboarding/business", status: :unprocessable_entity
+      end
     else
       redirect_to onboarding_path(page: "not_found")
     end
@@ -137,5 +160,9 @@ class OnboardingController < ApplicationController
 
   def personal_information_params
     params.require(:personal_information).permit(:first_name, :last_name, :dob, :ssn)
+  end
+
+  def person_address_params
+    params.require(:person_address).permit(:address_line_one, :address_line_two, :city, :state, :postal_code)
   end
 end
