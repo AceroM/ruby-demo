@@ -1,0 +1,27 @@
+{
+  "ban_status": "ALLOWED",
+  "creation_time": "2024-01-25T00:34:32.719352Z",
+  "dob": "1999-02-02",
+  "email": "miguelacero528+1023@gmail.com",
+  "first_name": "Test",
+  "has_accounts": false,
+  "id": "418af477-83a9-4736-a87d-caa71444c3a4",
+  "is_customer": true,
+  "last_name": "Person",
+  "last_updated_time": "2024-01-27T20:54:55.686465Z",
+  "phone_number": "+13472244430",
+  "ssn": "4092",
+  "ssn_source": "MANUAL",
+  "status": "ACTIVE",
+  "tenant": "pnrqep_yowddy",
+  "verification_status": "UNVERIFIED",
+  "personal_ids": [
+    {
+      "id": "284892da-a94a-4390-9727-21db823e649d",
+      "id_type": "SSN",
+      "identifier": "4092",
+      "system_provided": false,
+      "country_code": "US"
+    }
+  ]
+}

@@ -2,5 +2,5 @@
 import "@hotwired/turbo-rails"
 import "controllers"
 import "src/confirm"
+import "src/map"
 import "src/turbo"
-

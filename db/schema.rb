@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_01_27_032438) do
+ActiveRecord::Schema[7.1].define(version: 2024_01_27_063654) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -93,20 +93,22 @@ ActiveRecord::Schema[7.1].define(version: 2024_01_27_032438) do
   end
 
   create_table "onboarding_flows", force: :cascade do |t|
-    t.boolean "accepted_disclosures"
+    t.datetime "accepted_disclosures"
     t.string "phone_number"
-    t.boolean "person_organization_linked"
-    t.boolean "person_address_saved"
-    t.boolean "business_info_saved"
-    t.boolean "business_info_collected"
+    t.datetime "phone_verified"
+    t.datetime "person_organization_linked"
+    t.datetime "person_address_saved"
+    t.datetime "business_info_saved"
+    t.datetime "business_info_collected"
     t.string "kyc_code"
+    t.datetime "kyc_verified"
     t.string "kyb_code"
-    t.boolean "virtual_account_created"
+    t.datetime "kyb_verified"
+    t.datetime "virtual_account_created"
     t.datetime "plaid_connection_time"
     t.bigint "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.datetime "phone_verified", precision: nil
     t.index ["user_id"], name: "index_onboarding_flows_on_user_id"
   end
 
@@ -201,8 +203,24 @@ ActiveRecord::Schema[7.1].define(version: 2024_01_27_032438) do
     t.datetime "updated_at", null: false
   end
 
+  create_table "synctera_accounts", force: :cascade do |t|
+    t.string "platform_id"
+    t.datetime "platform_last_updated_at"
+    t.string "name"
+    t.jsonb "data"
+    t.bigint "user_id", null: false
+    t.bigint "synctera_business_id", null: false
+    t.bigint "synctera_person_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["synctera_business_id"], name: "index_synctera_accounts_on_synctera_business_id"
+    t.index ["synctera_person_id"], name: "index_synctera_accounts_on_synctera_person_id"
+    t.index ["user_id"], name: "index_synctera_accounts_on_user_id"
+  end
+
   create_table "synctera_businesses", force: :cascade do |t|
     t.string "platform_id"
+    t.datetime "platform_last_updated_at"
     t.jsonb "data"
     t.bigint "user_id", null: false
     t.datetime "created_at", null: false
@@ -229,6 +247,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_01_27_032438) do
 
   create_table "synctera_people", force: :cascade do |t|
     t.string "platform_id"
+    t.datetime "platform_last_updated_at"
     t.jsonb "data"
     t.bigint "user_id", null: false
     t.datetime "created_at", null: false
@@ -285,6 +304,9 @@ ActiveRecord::Schema[7.1].define(version: 2024_01_27_032438) do
   add_foreign_key "pay_charges", "pay_subscriptions", column: "subscription_id"
   add_foreign_key "pay_payment_methods", "pay_customers", column: "customer_id"
   add_foreign_key "pay_subscriptions", "pay_customers", column: "customer_id"
+  add_foreign_key "synctera_accounts", "synctera_businesses"
+  add_foreign_key "synctera_accounts", "synctera_people"
+  add_foreign_key "synctera_accounts", "users"
   add_foreign_key "synctera_businesses", "users"
   add_foreign_key "synctera_disclosures", "synctera_businesses"
   add_foreign_key "synctera_disclosures", "synctera_people"

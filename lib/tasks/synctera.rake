@@ -12,4 +12,16 @@ namespace :synctera do
     end
     puts "Disclosures synced successfully."
   end
+  desc "Synchronize persons for all users"
+  task sync_persons: [:environment] do |task, _args|
+    User.find_each do |user|
+      puts "Syncing persons for user: #{user.email}"
+      if user.synctera?
+        Synctera::Persons.sync(user)
+      else
+        puts "Synctera person not found for user: #{user.email}"
+      end
+    end
+    puts "Persons synced successfully."
+  end
 end

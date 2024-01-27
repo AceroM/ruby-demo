@@ -15,6 +15,9 @@ class OnboardingController < ApplicationController
     if @subscription.saas_plan?
       return render_or_redirect "integrations"
     end
+    if @flow.step == "info"
+      @info = PersonalInformation.new
+    end
     render_or_redirect(params[:page], @flow.step)
   end
 
@@ -39,7 +42,7 @@ class OnboardingController < ApplicationController
         client.disclosures.accept_person_disclosure(disclosure)
       end
       Synctera::Disclosures.sync_all(Current.user)
-      @flow.update(accepted_disclosures: true)
+      @flow.update(accepted_disclosures: Time.current)
       redirect_to onboarding_path(page: "phone_number"), notice: "Disclosures accepted"
     when "phone_number"
       if @flow.verifying_phone?
@@ -75,11 +78,24 @@ class OnboardingController < ApplicationController
           redirect_to onboarding_path(page: "phone_number"), alert: "An error occurred sending a verification code. Please try again or contact support."
         end
       end
+    when "info"
+      @info = PersonalInformation.new(personal_information_params)
+      if @info.valid?
+        client = Synctera::Client.new(user: Current.user)
+        client.persons.save_info(@info)
+        client.persons.activate
+        Synctera::Persons.sync(Current.user)
+        @flow.update(person_organization_linked: Time.current)
+        redirect_to onboarding_path(page: "address")
+      else
+        render "onboarding/info", status: :unprocessable_entity
+      end
+    when "address"
     else
       redirect_to onboarding_path(page: "not_found")
     end
   rescue StandardError => e
-    redirect_to onboarding_path(page: "welcome"), alert: "An error occurred. Please try again or contact support."
+    redirect_to onboarding_path(page: @flow.step), alert: "An error occurred. Please try again or contact support."
   end
 
   def destroy
@@ -117,5 +133,9 @@ class OnboardingController < ApplicationController
 
   def set_onboarding_flow
     @flow = Current.user.onboarding_flow || OnboardingFlow.create(user: Current.user)
+  end
+
+  def personal_information_params
+    params.require(:personal_information).permit(:first_name, :last_name, :dob, :ssn)
   end
 end

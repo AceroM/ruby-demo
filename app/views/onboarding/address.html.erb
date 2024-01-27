@@ -1,0 +1,48 @@
+<% title "Address Information" %>
+
+<%= form_with model: @info, url: onboarding_path, method: :patch, class: "card content-grid__content" do |f| %>
+  <div class="card__header">
+    <h2 class="heading-2">Address Information</h2>
+  </div>
+  <div data-controller="address" data-action="map@window->address#initGoogle" data-address-maps-key-value="<%= Rails.application.credentials.dig(:google, :maps_api_key) %>" class="card__body">
+    <p>
+      Please verify your address before continuing to the next page. Please
+      note that once you verify your address, you will be able to modify the
+      city/state/zip code, but you won't be able to change the address unless
+      you refresh the page
+    </p>
+    <div class="field">
+      <%= f.label :address_line_one, class: "label" do %>
+        Home Address (P.O. Box and mail service locations are not accepted)<span class="required">*</span>
+      <% end %>
+      <%= f.text_field :address_line_one, placeholder: "123 Normal St.", "data-address-target": "input", autocomplete: "off", class: "input" %>
+    </div>
+    <div class="field">
+      <%= f.label :address_line_two, "Address Line 2 (Apt #, Suite Number etc.)", class: "label" %>
+      <%= f.text_field :address_line_two, placeholder: "Apt. 123", class: "input" %>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <%= f.label :city, class: "label" do %>
+          City<span class="required">*</span>
+        <% end %>
+        <%= f.text_field :city, placeholder: "NYC", "data-address-target": "city", class: "input" %>
+      </div>
+      <div class="field">
+        <%= f.label :state, class: "label" do %>
+          State<span class="required">*</span>
+        <% end %>
+        <%= f.select :state, us_states, {}, "data-address-target": "state", class: "select" %>
+      </div>
+      <div class="field">
+        <%= f.label :postal_code, class: "label" do %>
+          Zip Code<span class="required">*</span>
+        <% end %>
+        <%= f.text_field :postal_code, placeholder: "11111", "data-address-target": "zip", class: "input" %>
+      </div>
+    </div>
+  </div>
+  <div class="card__footer">
+    <%= f.submit "Confirm", class: "button button--pad-sm" %>
+  </div>
+<% end %>

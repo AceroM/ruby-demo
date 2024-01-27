@@ -5,16 +5,16 @@ class OnboardingFlow < ApplicationRecord
   def step
     if plaid_connection_time
       "finished"
-    elsif kyb_code == "ACCEPTED"
+    elsif kyb_verified
       "link_plaid"
-    elsif kyc_code == "ACCEPTED"
+    elsif kyc_verified
       "kyb"
     elsif business_info_collected
       "kyc"
     elsif business_info_saved
       "business_info"
     elsif person_address_saved
-      "business_info"
+      "business"
     elsif person_organization_linked
       "address"
     elsif phone_verified

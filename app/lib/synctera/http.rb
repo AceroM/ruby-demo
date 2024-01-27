@@ -8,12 +8,17 @@ module Synctera
       conn.post(path, body, options).try(:body)
     end
 
+    def patch(path, body, options = {})
+      conn.patch(path, body, options).try(:body)
+    end
+
     def conn
       @conn ||= Faraday.new(url: @base_url) do |f|
         f.request :url_encoded
         f.request :authorization, :bearer, @api_key
-        f.response :json
         f.use MiddlewareErrors
+        f.response :raise_error
+        f.response :json
       end
     end
   end

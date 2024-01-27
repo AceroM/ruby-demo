@@ -1,11 +1,42 @@
 <% title "Personal Information" %>
 
-<%= form_with url: onboarding_path, method: :patch, class: "card content-grid__content" do |f| %>
+<%= form_with model: @info, url: onboarding_path, method: :patch, class: "card content-grid__content" do |f| %>
   <div class="card__header">
-    <h2 class="heading-2">Personal Information</h2>
+    <h2 class="heading-2">Tell us about yourself</h2>
   </div>
   <div class="card__body">
-    <p>Please enter your personal information</p>
-    <div class="field"></div>
+    <div class="field-row">
+      <div class="field">
+        <%= f.label :first_name, class: "label" do %>
+          First Name<span class="required">*</span>
+        <% end %>
+        <%= f.text_field :first_name, placeholder: "John", class: "input" %>
+      </div>
+      <div class="field">
+        <%= f.label :last_name, class: "label" do %>
+          Last Name<span class="required">*</span>
+        <% end %>
+        <%= f.text_field :last_name, placeholder: "Doe", class: "input" %>
+      </div>
+    </div>
+    <div class="field">
+      <%= f.label :dob, class: "label" do %>
+        Date of Birth<span class="required">*</span>
+      <% end %>
+      <%= f.date_field :dob, placeholder: "Doe", class: "input" %>
+    </div>
+    <div class="field">
+      <%= f.label :ssn, class: "label" do %>
+        SSN<span class="required">*</span>
+      <% end %>
+      <%= f.text_field :ssn, placeholder: "123-45-6789", data: {
+        controller: "mask",
+        "mask-pattern-value": "000-00-0000",
+        "mask-overwrite-value": "shift"
+      }, class: "input" %>
+    </div>
+  </div>
+  <div class="card__footer">
+    <%= f.submit "Confirm", class: "button button--pad-sm" %>
   </div>
 <% end %>

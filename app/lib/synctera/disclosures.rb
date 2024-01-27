@@ -72,7 +72,7 @@ module Synctera
       end
     end
 
-    def self.sync(user:, id:)
+    def self.sync(user:, disclosure_id:)
       client = Synctera::Client.new(user: user)
       disclosure = client.get(id)
     end

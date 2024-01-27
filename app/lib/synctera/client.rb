@@ -27,6 +27,10 @@ module Synctera
       @disclosures ||= Disclosures.new(client: self, user: @user)
     end
 
+    def accounts
+      @accounts ||= Accounts.new(client: self, user: @user)
+    end
+
     def require_person
       raise ConfigurationError, "User does not have a person id" unless @user.person_id
     end
