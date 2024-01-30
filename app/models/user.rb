@@ -36,6 +36,10 @@ class User < ApplicationRecord
 
   alias_method :subscribed?, :subscription
 
+  def active_for_authentication?
+    super && !suspended?
+  end
+
   def email_confirmed?
     confirmed_at?
   end

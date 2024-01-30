@@ -1,13 +1,13 @@
 <% title "Welcome" %>
 
-<%= form_with url: onboarding_path, method: :patch, class: "card" do |f| %>
+<%= form_with url: onboarding_path, method: :patch, class: "card content-grid__content" do |f| %>
   <div class="card__header">
     <h2 class="heading-2">Welcome</h2>
   </div>
   <div class="card__body">
     <p>To get started, please accept the following disclosures:</p>
     <div class="disclosures">
-      <% @required_disclosures.each do |disclosure| %>
+      <% OnboardingFlow.required_disclosures.each do |disclosure| %>
         <div class="field disclosure">
           <%= f.label disclosure[:form_id], class: "checkbox" do %>
             <%= f.check_box disclosure[:form_id] %>

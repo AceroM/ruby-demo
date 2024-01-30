@@ -26,7 +26,7 @@ class OnboardingController < ApplicationController
   def update
     case @flow.step
     when "welcome"
-      unless @flow.required_disclosures.all? { |d| params[d[:form_id]] == "1" }
+      unless OnboardingFlow.required_disclosures.all? { |d| params[d[:form_id]] == "1" }
         return redirect_to onboarding_path(page: "welcome"), notice: "all not accepted"
       end
       client = Synctera::Client.new(user: Current.user)
@@ -39,7 +39,7 @@ class OnboardingController < ApplicationController
         Current.user.create_synctera_business(platform_id: business["id"], data: business.except(:id))
         user_disclosures = client.disclosures.list(type: "person")
       end
-      disclosures_to_accept = @flow.required_disclosures.pluck(:type) - user_disclosures.pluck("type")
+      disclosures_to_accept = OnboardingFlow.required_disclosures.pluck(:type) - user_disclosures.pluck("type")
       disclosures_to_accept.each do |disclosure|
         client.disclosures.accept_person_disclosure(disclosure)
       end

@@ -8,5 +8,7 @@ class CreateSyncteraBusinesses < ActiveRecord::Migration[7.1]
 
       t.timestamps
     end
+
+    add_index :synctera_businesses, :platform_id, unique: true
   end
 end

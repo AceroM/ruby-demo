@@ -41,3 +41,7 @@
 /vendor/javascript/
 
 /config/credentials/test.key
+/db/errors_development*
+/db/errors_production*
+/db/errors_test*
+.byebug_history

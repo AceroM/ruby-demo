@@ -2342,6 +2342,28 @@
       </library>
     </orderEntry>
     <orderEntry type="module-library">
+      <library name="sqlite3 (v1.7.1) [path][gem]" type="rubylib">
+        <properties>
+          <option name="version" value="4" />
+        </properties>
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/vendor/bundle/ruby/3.2.0/gems/sqlite3-1.7.1-arm64-darwin/ext" />
+          <root url="file://$MODULE_DIR$/vendor/bundle/ruby/3.2.0/gems/sqlite3-1.7.1-arm64-darwin/lib" />
+          <root url="file://$MODULE_DIR$/vendor/bundle/ruby/3.2.0/gems/sqlite3-1.7.1-arm64-darwin/test" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES>
+          <root url="file://$MODULE_DIR$/vendor/bundle/ruby/3.2.0/gems/sqlite3-1.7.1-arm64-darwin/ext" />
+          <root url="file://$MODULE_DIR$/vendor/bundle/ruby/3.2.0/gems/sqlite3-1.7.1-arm64-darwin/lib" />
+          <root url="file://$MODULE_DIR$/vendor/bundle/ruby/3.2.0/gems/sqlite3-1.7.1-arm64-darwin/test" />
+        </SOURCES>
+        <excluded>
+          <root url="file://$MODULE_DIR$/vendor/bundle/ruby/3.2.0/gems/sqlite3-1.7.1-arm64-darwin/ext" />
+          <root url="file://$MODULE_DIR$/vendor/bundle/ruby/3.2.0/gems/sqlite3-1.7.1-arm64-darwin/test" />
+        </excluded>
+      </library>
+    </orderEntry>
+    <orderEntry type="module-library">
       <library name="sshkit (v1.22.0) [path][gem]" type="rubylib">
         <properties>
           <option name="version" value="4" />
@@ -2982,7 +3004,22 @@
           <RakeTaskImpl id="db">
             <subtasks>
               <RakeTaskImpl description="Create the database from DATABASE_URL or config/database.yml for the current RAILS_ENV (use db:create:all to create all databases in the config). Without RAILS_ENV or when RAILS_ENV is development, it defaults to creating the development and test databases, except when DATABASE_URL is present" fullCommand="db:create" id="create" />
+              <RakeTaskImpl id="create">
+                <subtasks>
+                  <RakeTaskImpl description="Create errors database for current environment" fullCommand="db:create:errors" id="errors" />
+                  <RakeTaskImpl description="Create main database for current environment" fullCommand="db:create:main" id="main" />
+                  <RakeTaskImpl description="" fullCommand="db:create:all" id="all" />
+                </subtasks>
+              </RakeTaskImpl>
               <RakeTaskImpl description="Drop the database from DATABASE_URL or config/database.yml for the current RAILS_ENV (use db:drop:all to drop all databases in the config). Without RAILS_ENV or when RAILS_ENV is development, it defaults to dropping the development and test databases, except when DATABASE_URL is present" fullCommand="db:drop" id="drop" />
+              <RakeTaskImpl id="drop">
+                <subtasks>
+                  <RakeTaskImpl description="Drop errors database for current environment" fullCommand="db:drop:errors" id="errors" />
+                  <RakeTaskImpl description="Drop main database for current environment" fullCommand="db:drop:main" id="main" />
+                  <RakeTaskImpl description="" fullCommand="db:drop:_unsafe" id="_unsafe" />
+                  <RakeTaskImpl description="" fullCommand="db:drop:all" id="all" />
+                </subtasks>
+              </RakeTaskImpl>
               <RakeTaskImpl id="encryption">
                 <subtasks>
                   <RakeTaskImpl description="Generate a set of keys for configuring Active Record encryption in a given environment" fullCommand="db:encryption:init" id="init" />
@@ -3003,15 +3040,54 @@
               <RakeTaskImpl id="migrate">
                 <subtasks>
                   <RakeTaskImpl description="Run the &quot;down&quot; for a given migration VERSION" fullCommand="db:migrate:down" id="down" />
+                  <RakeTaskImpl id="down">
+                    <subtasks>
+                      <RakeTaskImpl description="Run the &quot;down&quot; on errors database for a given migration VERSION" fullCommand="db:migrate:down:errors" id="errors" />
+                      <RakeTaskImpl description="Run the &quot;down&quot; on main database for a given migration VERSION" fullCommand="db:migrate:down:main" id="main" />
+                    </subtasks>
+                  </RakeTaskImpl>
+                  <RakeTaskImpl description="Migrate errors database for current environment" fullCommand="db:migrate:errors" id="errors" />
+                  <RakeTaskImpl description="Migrate main database for current environment" fullCommand="db:migrate:main" id="main" />
                   <RakeTaskImpl description="Roll back the database one migration and re-migrate up (options: STEP=x, VERSION=x)" fullCommand="db:migrate:redo" id="redo" />
+                  <RakeTaskImpl id="redo">
+                    <subtasks>
+                      <RakeTaskImpl description="Roll back errors database one migration and re-migrate up (options: STEP=x, VERSION=x)" fullCommand="db:migrate:redo:errors" id="errors" />
+                      <RakeTaskImpl description="Roll back main database one migration and re-migrate up (options: STEP=x, VERSION=x)" fullCommand="db:migrate:redo:main" id="main" />
+                    </subtasks>
+                  </RakeTaskImpl>
                   <RakeTaskImpl description="Display status of migrations" fullCommand="db:migrate:status" id="status" />
+                  <RakeTaskImpl id="status">
+                    <subtasks>
+                      <RakeTaskImpl description="Display status of migrations for errors database" fullCommand="db:migrate:status:errors" id="errors" />
+                      <RakeTaskImpl description="Display status of migrations for main database" fullCommand="db:migrate:status:main" id="main" />
+                    </subtasks>
+                  </RakeTaskImpl>
                   <RakeTaskImpl description="Run the &quot;up&quot; for a given migration VERSION" fullCommand="db:migrate:up" id="up" />
+                  <RakeTaskImpl id="up">
+                    <subtasks>
+                      <RakeTaskImpl description="Run the &quot;up&quot; on errors database for a given migration VERSION" fullCommand="db:migrate:up:errors" id="errors" />
+                      <RakeTaskImpl description="Run the &quot;up&quot; on main database for a given migration VERSION" fullCommand="db:migrate:up:main" id="main" />
+                    </subtasks>
+                  </RakeTaskImpl>
                   <RakeTaskImpl description="" fullCommand="db:migrate:reset" id="reset" />
                 </subtasks>
               </RakeTaskImpl>
               <RakeTaskImpl description="Run setup if database does not exist, or run migrations if it does" fullCommand="db:prepare" id="prepare" />
               <RakeTaskImpl description="Drop and recreate all databases from their schema for the current environment and load the seeds" fullCommand="db:reset" id="reset" />
+              <RakeTaskImpl id="reset">
+                <subtasks>
+                  <RakeTaskImpl description="Drop and recreate the errors database from its schema for the current environment and load the seeds" fullCommand="db:reset:errors" id="errors" />
+                  <RakeTaskImpl description="Drop and recreate the main database from its schema for the current environment and load the seeds" fullCommand="db:reset:main" id="main" />
+                  <RakeTaskImpl description="" fullCommand="db:reset:all" id="all" />
+                </subtasks>
+              </RakeTaskImpl>
               <RakeTaskImpl description="Roll the schema back to the previous version (specify steps w/ STEP=n)" fullCommand="db:rollback" id="rollback" />
+              <RakeTaskImpl id="rollback">
+                <subtasks>
+                  <RakeTaskImpl description="Rollback errors database for current environment (specify steps w/ STEP=n)" fullCommand="db:rollback:errors" id="errors" />
+                  <RakeTaskImpl description="Rollback main database for current environment (specify steps w/ STEP=n)" fullCommand="db:rollback:main" id="main" />
+                </subtasks>
+              </RakeTaskImpl>
               <RakeTaskImpl id="schema">
                 <subtasks>
                   <RakeTaskImpl id="cache">
@@ -3021,7 +3097,19 @@
                     </subtasks>
                   </RakeTaskImpl>
                   <RakeTaskImpl description="Create a database schema file (either db/schema.rb or db/structure.sql, depending on `ENV['SCHEMA_FORMAT']` or `config.active_record.schema_format`)" fullCommand="db:schema:dump" id="dump" />
+                  <RakeTaskImpl id="dump">
+                    <subtasks>
+                      <RakeTaskImpl description="Create a database schema file (either db/schema.rb or db/structure.sql, depending on `ENV['SCHEMA_FORMAT']` or `config.active_record.schema_format`) for errors database" fullCommand="db:schema:dump:errors" id="errors" />
+                      <RakeTaskImpl description="Create a database schema file (either db/schema.rb or db/structure.sql, depending on `ENV['SCHEMA_FORMAT']` or `config.active_record.schema_format`) for main database" fullCommand="db:schema:dump:main" id="main" />
+                    </subtasks>
+                  </RakeTaskImpl>
                   <RakeTaskImpl description="Load a database schema file (either db/schema.rb or db/structure.sql, depending on `ENV['SCHEMA_FORMAT']` or `config.active_record.schema_format`) into the database" fullCommand="db:schema:load" id="load" />
+                  <RakeTaskImpl id="load">
+                    <subtasks>
+                      <RakeTaskImpl description="Load a database schema file (either db/schema.rb or db/structure.sql, depending on `ENV['SCHEMA_FORMAT']` or `config.active_record.schema_format`) into the errors database" fullCommand="db:schema:load:errors" id="errors" />
+                      <RakeTaskImpl description="Load a database schema file (either db/schema.rb or db/structure.sql, depending on `ENV['SCHEMA_FORMAT']` or `config.active_record.schema_format`) into the main database" fullCommand="db:schema:load:main" id="main" />
+                    </subtasks>
+                  </RakeTaskImpl>
                 </subtasks>
               </RakeTaskImpl>
               <RakeTaskImpl description="Load the seed data from db/seeds.rb" fullCommand="db:seed" id="seed" />
@@ -3031,23 +3119,37 @@
                 </subtasks>
               </RakeTaskImpl>
               <RakeTaskImpl description="Create all databases, load all schemas, and initialize with the seed data (use db:reset to also drop all databases first)" fullCommand="db:setup" id="setup" />
+              <RakeTaskImpl id="setup">
+                <subtasks>
+                  <RakeTaskImpl description="Create the errors database, load the schema, and initialize with the seed data (use db:reset:errors to also drop the database first)" fullCommand="db:setup:errors" id="errors" />
+                  <RakeTaskImpl description="Create the main database, load the schema, and initialize with the seed data (use db:reset:main to also drop the database first)" fullCommand="db:setup:main" id="main" />
+                  <RakeTaskImpl description="" fullCommand="db:setup:all" id="all" />
+                </subtasks>
+              </RakeTaskImpl>
               <RakeTaskImpl description="Retrieve the current schema version number" fullCommand="db:version" id="version" />
+              <RakeTaskImpl id="version">
+                <subtasks>
+                  <RakeTaskImpl description="Retrieve the current schema version number for errors database" fullCommand="db:version:errors" id="errors" />
+                  <RakeTaskImpl description="Retrieve the current schema version number for main database" fullCommand="db:version:main" id="main" />
+                </subtasks>
+              </RakeTaskImpl>
               <RakeTaskImpl description="" fullCommand="db:_dump" id="_dump" />
+              <RakeTaskImpl id="_dump">
+                <subtasks>
+                  <RakeTaskImpl description="" fullCommand="db:_dump:errors" id="errors" />
+                  <RakeTaskImpl description="" fullCommand="db:_dump:main" id="main" />
+                </subtasks>
+              </RakeTaskImpl>
               <RakeTaskImpl description="" fullCommand="db:abort_if_pending_migrations" id="abort_if_pending_migrations" />
+              <RakeTaskImpl id="abort_if_pending_migrations">
+                <subtasks>
+                  <RakeTaskImpl description="" fullCommand="db:abort_if_pending_migrations:errors" id="errors" />
+                  <RakeTaskImpl description="" fullCommand="db:abort_if_pending_migrations:main" id="main" />
+                </subtasks>
+              </RakeTaskImpl>
               <RakeTaskImpl description="" fullCommand="db:charset" id="charset" />
               <RakeTaskImpl description="" fullCommand="db:check_protected_environments" id="check_protected_environments" />
               <RakeTaskImpl description="" fullCommand="db:collation" id="collation" />
-              <RakeTaskImpl id="create">
-                <subtasks>
-                  <RakeTaskImpl description="" fullCommand="db:create:all" id="all" />
-                </subtasks>
-              </RakeTaskImpl>
-              <RakeTaskImpl id="drop">
-                <subtasks>
-                  <RakeTaskImpl description="" fullCommand="db:drop:_unsafe" id="_unsafe" />
-                  <RakeTaskImpl description="" fullCommand="db:drop:all" id="all" />
-                </subtasks>
-              </RakeTaskImpl>
               <RakeTaskImpl description="" fullCommand="db:forward" id="forward" />
               <RakeTaskImpl description="" fullCommand="db:load_config" id="load_config" />
               <RakeTaskImpl description="" fullCommand="db:purge" id="purge" />
@@ -3056,21 +3158,29 @@
                   <RakeTaskImpl description="" fullCommand="db:purge:all" id="all" />
                 </subtasks>
               </RakeTaskImpl>
-              <RakeTaskImpl id="reset">
-                <subtasks>
-                  <RakeTaskImpl description="" fullCommand="db:reset:all" id="all" />
-                </subtasks>
-              </RakeTaskImpl>
-              <RakeTaskImpl id="setup">
-                <subtasks>
-                  <RakeTaskImpl description="" fullCommand="db:setup:all" id="all" />
-                </subtasks>
-              </RakeTaskImpl>
               <RakeTaskImpl id="test">
                 <subtasks>
                   <RakeTaskImpl description="" fullCommand="db:test:load_schema" id="load_schema" />
+                  <RakeTaskImpl id="load_schema">
+                    <subtasks>
+                      <RakeTaskImpl description="" fullCommand="db:test:load_schema:errors" id="errors" />
+                      <RakeTaskImpl description="" fullCommand="db:test:load_schema:main" id="main" />
+                    </subtasks>
+                  </RakeTaskImpl>
                   <RakeTaskImpl description="" fullCommand="db:test:prepare" id="prepare" />
+                  <RakeTaskImpl id="prepare">
+                    <subtasks>
+                      <RakeTaskImpl description="" fullCommand="db:test:prepare:errors" id="errors" />
+                      <RakeTaskImpl description="" fullCommand="db:test:prepare:main" id="main" />
+                    </subtasks>
+                  </RakeTaskImpl>
                   <RakeTaskImpl description="" fullCommand="db:test:purge" id="purge" />
+                  <RakeTaskImpl id="purge">
+                    <subtasks>
+                      <RakeTaskImpl description="" fullCommand="db:test:purge:errors" id="errors" />
+                      <RakeTaskImpl description="" fullCommand="db:test:purge:main" id="main" />
+                    </subtasks>
+                  </RakeTaskImpl>
                 </subtasks>
               </RakeTaskImpl>
               <RakeTaskImpl description="" fullCommand="db:truncate_all" id="truncate_all" />
@@ -3136,6 +3246,7 @@
           <RakeTaskImpl id="synctera">
             <subtasks>
               <RakeTaskImpl description="Synchronize disclosures for all users" fullCommand="synctera:sync_disclosures" id="sync_disclosures" />
+              <RakeTaskImpl description="Synchronize persons for all users" fullCommand="synctera:sync_persons" id="sync_persons" />
             </subtasks>
           </RakeTaskImpl>
           <RakeTaskImpl description="Run all tests in test folder except system ones" fullCommand="test" id="test" />

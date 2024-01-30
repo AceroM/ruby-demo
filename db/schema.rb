@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_01_27_063654) do
+ActiveRecord::Schema[7.1].define(version: 2024_01_22_001040) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -213,6 +213,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_01_27_063654) do
     t.bigint "synctera_person_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["platform_id"], name: "index_synctera_accounts_on_platform_id", unique: true
     t.index ["synctera_business_id"], name: "index_synctera_accounts_on_synctera_business_id"
     t.index ["synctera_person_id"], name: "index_synctera_accounts_on_synctera_person_id"
     t.index ["user_id"], name: "index_synctera_accounts_on_user_id"
@@ -225,6 +226,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_01_27_063654) do
     t.bigint "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["platform_id"], name: "index_synctera_businesses_on_platform_id", unique: true
     t.index ["user_id"], name: "index_synctera_businesses_on_user_id"
   end
 
@@ -252,6 +254,7 @@ ActiveRecord::Schema[7.1].define(version: 2024_01_27_063654) do
     t.bigint "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["platform_id"], name: "index_synctera_people_on_platform_id", unique: true
     t.index ["user_id"], name: "index_synctera_people_on_user_id"
   end
 

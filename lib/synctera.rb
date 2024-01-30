@@ -1,6 +1,10 @@
-Dir[File.join(__dir__, "synctera", "*.rb")].each do |file|
-  require_relative file
-end
+require_relative "synctera/accounts"
+require_relative "synctera/businesses"
+require_relative "synctera/cards"
+require_relative "synctera/client"
+require_relative "synctera/disclosures"
+require_relative "synctera/http"
+require_relative "synctera/persons"
 
 module Synctera
   class SyncteraError < StandardError; end
@@ -11,9 +15,7 @@ module Synctera
     def call(env)
       @app.call(env)
     rescue Faraday::Error => e
-      debugger
       raise e unless e.response.is_a?(Hash)
-      puts e.response[:body]
       raise SyncteraError, e.response[:body]
     end
   end

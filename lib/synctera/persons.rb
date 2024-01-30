@@ -1,31 +1,33 @@
 module Synctera
   class Persons
+    attr_reader :client, :user
+
     def initialize(client:, user:)
       @client = client
       @user = user
 
-      unless @user
+      unless user
         raise ConfigurationError, "User is required"
       end
     end
-
+    
     def get
-      @client.require_person
-      @client.get("/v0/persons/#{@user.person_id}")
+      client.require_person
+      client.get("/v0/persons/#{user.person_id}")
     end
 
     def create
-      @client.post("/v0/persons", {
+      client.post("/v0/persons", {
         is_customer: true,
         status: "PROSPECT"
       }.to_json)
     end
 
     def save_info(params)
-      @client.require_person
-      @client.patch("/v0/persons/#{@user.person_id}", {
-        email: @user.email,
-        phone_number: @user.onboarding_flow.phone_number,
+      client.require_person
+      client.patch("/v0/persons/#{user.person_id}", {
+        email: user.email,
+        phone_number: user.onboarding_flow.phone_number,
         first_name: params.first_name,
         last_name: params.last_name,
         dob: params.dob,
@@ -35,13 +37,13 @@ module Synctera
     end
 
     def activate
-      @client.require_person
-      @client.patch("/v0/persons/#{@user.person_id}", { status: "ACTIVE" }.to_json)
+      client.require_person
+      client.patch("/v0/persons/#{user.person_id}", { status: "ACTIVE" }.to_json)
     end
 
     def save_address(params)
-      @client.require_person
-      @client.patch("/v0/persons/#{@user.person_id}", {
+      client.require_person
+      client.patch("/v0/persons/#{user.person_id}", {
         legal_address: {
           address_line_1: params.address_line_one,
           address_line_2: params.address_line_two || "",

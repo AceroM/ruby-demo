@@ -1,31 +1,33 @@
 module Synctera
   class Disclosures
+    attr_reader :client, :user
+
     def initialize(client:, user:)
       @client = client
       @user = user
     end
 
     def get(id)
-      @client.get("/v0/disclosures", { id: })
+      client.get("/v0/disclosures", { id: })
     end
 
     def list(paginate: false, limit: nil, type: nil)
       data = []
-      if @user && type.nil?
+      if user && type.nil?
         raise ArgumentError, "Must specify type when user is present"
       else
         next_page_token = nil
         params = { page_token: next_page_token, limit: limit }
         if type == "business"
-          @client.require_business
-          params[:business_id] = @user.business_id
+          client.require_business
+          params[:business_id] = user.business_id
         end
         if type == "person"
-          @client.require_person
-          params[:person_id] = @user.person_id
+          client.require_person
+          params[:person_id] = user.person_id
         end
         loop do
-          response = @client.get("/v0/disclosures", params.compact)
+          response = client.get("/v0/disclosures", params.compact)
           data += response.dig("disclosures")
           next_page_token = response.dig("next_page_token")
           break if next_page_token.nil? || !paginate
@@ -35,9 +37,9 @@ module Synctera
     end
 
     def accept_person_disclosure(type)
-      @client.require_person
-      @client.post("/v0/disclosures", {
-        person_id: @user.person_id,
+      client.require_person
+      client.post("/v0/disclosures", {
+        person_id: user.person_id,
         type: type,
         version: "1.0",
         event_type: "ACKNOWLEDGED",

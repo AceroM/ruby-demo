@@ -16,6 +16,14 @@ class Accounts::SessionsController < Devise::SessionsController
     end
   end
 
+  def create
+    self.resource = warden.authenticate!(auth_options)
+    set_flash_message!(:notice, :signed_in)
+    sign_in(resource_name, resource)
+    yield resource if block_given?
+    respond_with resource, location: after_sign_in_path_for(resource)
+  end
+
   # Override Devise 302 redirect to 303 (:see_other) for Turbo
   #
   # See https://github.com/heartcombo/devise/issues/5458

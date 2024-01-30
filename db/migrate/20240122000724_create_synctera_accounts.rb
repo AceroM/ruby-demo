@@ -11,5 +11,7 @@ class CreateSyncteraAccounts < ActiveRecord::Migration[7.1]
 
       t.timestamps
     end
+    
+    add_index :synctera_accounts, :platform_id, unique: true
   end
 end
