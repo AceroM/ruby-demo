@@ -81,10 +81,6 @@ module Synctera
 
     private
 
-    def self.excluded_keys
-      %w[id type event_type last_updated_time person_id business_id]
-    end
-
     def self.get_attributes(user)
       lambda do |disclosure|
         {
@@ -94,7 +90,7 @@ module Synctera
           platform_last_updated_at: disclosure["last_updated_time"],
           synctera_person_id: disclosure["person_id"] == user.person_id ? user.person_id : nil,
           synctera_business_id: disclosure["business_id"] == user.business_id ? user.business_id : nil,
-          data: disclosure.except(*excluded_keys)
+          data: disclosure
         }.compact
       end
     end

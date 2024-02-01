@@ -23,7 +23,7 @@ export default class extends Controller {
   }
 
   handleKeyDown(event) {
-    if (!this._isValidOtpInput(event.key)) {
+    if (!this.#isValidOtpInput(event.key)) {
       event.preventDefault()
     }
   }
@@ -64,7 +64,7 @@ export default class extends Controller {
     }
   }
 
-  _isValidOtpInput(key) {
+  #isValidOtpInput(key) {
     return ["Backspace", "ArrowLeft", "ArrowRight", "Tab", "Shift", "Meta"].includes(key) ||
       ("0" <= key && key <= "9") ||
       ("a" <= key && key <= "z")

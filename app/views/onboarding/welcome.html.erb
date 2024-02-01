@@ -1,17 +1,25 @@
 <% title "Welcome" %>
 
-<%= form_with url: onboarding_path, method: :patch, class: "card content-grid__content" do |f| %>
+<%= form_with url: onboarding_path, method: :patch, class: "card content-grid__content", data: {
+  controller: "onboarding--welcome"
+} do |f| %>
   <div class="card__header">
     <h2 class="heading-2">Welcome</h2>
   </div>
   <div class="card__body">
     <p>To get started, please accept the following disclosures:</p>
     <div class="disclosures">
-      <% OnboardingFlow.required_disclosures.each do |disclosure| %>
-        <div class="field disclosure">
-          <%= f.label disclosure[:form_id], class: "checkbox" do %>
+      <% OnboardingFlow::Disclosures.required.each do |disclosure| %>
+        <div class="field disclosures__item">
+          <%= f.label disclosure[:form_id], class: "checkbox", data: {
+            "onboarding--welcome-target": ("reference" if disclosure[:click_required].present?),
+            "visited": false, action: "click->onboarding--welcome#toggleVisited"
+          } do %>
             <%= f.check_box disclosure[:form_id] %>
-            <span>I agree to the <%= link_to disclosure[:title], disclosure[:url], class: "link" %></span>
+            <span>I agree to the <%= link_to disclosure[:title], disclosure[:url], class: "link", target: "_blank" %></span>
+          <% end %>
+          <% if disclosure[:click_required].present? %>
+            <div data-onboarding--welcome-target="floating" class="d-none"></div>
           <% end %>
         </div>
       <% end %>

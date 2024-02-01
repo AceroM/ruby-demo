@@ -6,9 +6,7 @@
   <%= csrf_meta_tags %>
   <%= csp_meta_tag %>
 
-  <%= stylesheet_link_tag "resets", "data-turbo-track": "reload" %>
-  <%= stylesheet_link_tag "globals", "data-turbo-track": "reload" %>
-  <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+  <%= stylesheet_link_tag :all, "data-turbo-track": "reload" %>
   <%= javascript_include_tag "devise-otp", "data-turbo-track": "reload", defer: false if controller_name.include?("otp_tokens") %>
   <%= javascript_importmap_tags %>
 </head>

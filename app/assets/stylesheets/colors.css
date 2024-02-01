@@ -1,0 +1,55 @@
+:root {
+  --brand-400: #c23a1a;
+  --brand-300: #f34921;
+  --brand-200: #f1876e;
+  --brand-100: #fed7ce;
+  --brand-50: #fde4de;
+  --neutral-900: #000000;
+  --neutral-800: #1f1f1f;
+  --neutral-700: #333333;
+  --neutral-600: #7d7d7d;
+  --neutral-500: #999999;
+  --neutral-400: #bebebe;
+  --neutral-300: #e0e0e0;
+  --neutral-200: #e6e6e6;
+  --neutral-100: #f2f2f2;
+  --neutral-50: #f9f9f9;
+  --white: #ffffff;
+  --yellow-400: #d26911;
+  --yellow-300: #ef8328;
+  --yellow-200: #f2ad78;
+  --yellow-100: #ffddc4;
+  --yellow-50: #fbeee4;
+  --green-700: #008a5b;
+  --green-500: #00b37a;
+  --green-400: #00d693;
+  --green-100: #e6f7f0;
+  --green-50: #f2f9f6;
+  --red-500: #d0021b;
+  --red-400: #f62c2c;
+  --red-300: #ff5a5a;
+  --red-100: #ffe1e1;
+  --red-50: #fff0f0;
+  --blue-500: #0077c8;
+  --blue-400: #299cef;
+  --blue-300: #5ac8fa;
+  --blue-100: #e6f7ff;
+  --gradient-orange: linear-gradient(
+    180deg,
+    #ff876b 0%,
+    #f34921 13.38%,
+    #f38b73 100%
+  );
+  --gradient-yellow: linear-gradient(
+    180deg,
+    #eaac78 0%,
+    #ef8328 13.38%,
+    #ebc7a9 100%
+  );
+  --gradient-black: linear-gradient(
+    180deg,
+    #5e5e5e 0%,
+    #000 13.38%,
+    #5f5f5f 100%
+  );
+}

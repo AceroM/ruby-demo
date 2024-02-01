@@ -54,43 +54,4 @@ class OnboardingFlow < ApplicationRecord
   def set_business_type(business_type)
     Kredis.string("business_type:#{prefix_id}").value = business_type
   end
-
-  def self.required_disclosures
-    [
-      {
-        "type": "E_SIGN",
-        "title": "E-Sign Consent",
-        "form_id": :e_sign_consent,
-        "url": terms_url
-      },
-      {
-        "type": "CARDHOLDER_AGREEMENT",
-        "title": "Cardholder Agreement",
-        "form_id": :cardholder_agreement,
-        "url": terms_url
-      },
-      {
-        "type": "TERMS_AND_CONDITIONS",
-        "title": "Terms and Conditions",
-        "form_id": :terms_and_conditions,
-        "url": terms_url
-      },
-      {
-        "type": "PRIVACY_NOTICE",
-        "title": "Privacy Notice",
-        "form_id": :privacy_notice,
-        "url": terms_url
-      },
-      {
-        "type": "KYC_DATA_COLLECTION",
-        "title": "KYC Data Collection",
-        "form_id": :kyc_data_collection,
-        "url": terms_url
-      }
-    ]
-  end
-
-  def self.terms_url
-    "https://www.example.com/terms"
-  end
 end

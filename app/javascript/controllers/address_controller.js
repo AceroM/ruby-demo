@@ -17,10 +17,10 @@ export default class extends Controller {
       fields: ["address_components", "geometry"],
       types: ["address"],
     })
-    this.autocomplete.addListener("place_changed", this.placeSelected.bind(this))
+    this.autocomplete.addListener("place_changed", this.#placeSelected.bind(this))
   }
 
-  placeSelected() {
+  #placeSelected() {
     const place = this.autocomplete.getPlace()
 
     if (!place.geometry) {

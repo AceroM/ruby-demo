@@ -13,7 +13,7 @@ export default class extends Controller {
     this.element.setAttribute("aria-expanded", "false")
   }
 
-  clean() {
+  #clean() {
     this.element.setAttribute("aria-expanded", "false")
     if (this.cleanup) {
       this.cleanup()
@@ -30,7 +30,7 @@ export default class extends Controller {
   toggle(event) {
     let popover = document.getElementById("popover")
     if (popover && this.floatingTarget.dataset.uuid === popover.dataset.uuid) {
-      this.clean()
+      this.#clean()
       const clonedContent = popover.cloneNode(true)
       while (clonedContent.firstChild) {
         this.floatingTarget.appendChild(clonedContent.firstChild)
@@ -42,7 +42,7 @@ export default class extends Controller {
       const uuidMatches = document.querySelectorAll(`[data-uuid="${popover.dataset.uuid}"]`)
       const matchedElem = Array.from(uuidMatches).find((elem) => !elem.contains(popover))
       if (matchedElem) {
-        this.clean()
+        this.#clean()
         const clonedContent = popover.cloneNode(true)
         while (clonedContent.firstChild) {
           matchedElem.appendChild(clonedContent.firstChild)
@@ -105,7 +105,7 @@ export default class extends Controller {
       canCloseDropdown = false
     }
     if (popover && this.hasFloatingTarget && canCloseDropdown && this.floatingTarget.dataset.uuid === popover.dataset.uuid) {
-      this.clean()
+      this.#clean()
       const clonedContent = popover.cloneNode(true)
       while (clonedContent.firstChild) {
         this.floatingTarget.appendChild(clonedContent.firstChild)

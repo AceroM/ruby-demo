@@ -1,0 +1,116 @@
+.two-factor {
+  & > :not(:first-child) {
+    margin-top: 1rem;
+  }
+}
+
+.create-password {
+  margin-top: 2rem;
+  display: flex;
+  gap: 1.5rem;
+}
+
+.create-password__form {
+  width: 100%;
+}
+
+.create-password__requirements {
+  height: fit-content;
+  width: 80%;
+}
+
+.create-password__submit {
+  margin-top: 1.5rem;
+}
+
+.connected-account {
+  width: 100%;
+  max-width: 35rem;
+}
+
+.connected-account__row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.billing-section {
+  margin-top: 1.5rem;
+}
+
+.billing-section__content {
+  margin-top: 1rem;
+}
+
+.plans {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1rem;
+}
+
+.plan {
+  border: 1px solid var(--neutral-100);
+  height: 100%;
+  border-radius: 0.625rem;
+  padding: 1rem;
+}
+
+.plan__header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.plan__footer {
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+@media (width <= 48rem) {
+  .plans {
+    grid-template-columns: 1fr;
+  }
+}
+
+.payment-methods {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1rem;
+
+  &:has(.empty-text) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.payment-methods__card {
+  border: 1px solid var(--neutral-100);
+  border-radius: 0.625rem;
+  padding: 1rem;
+}
+
+.payment-methods__header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding-bottom: 0.5rem;
+}
+
+.payment-methods__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 0.8125rem;
+}
+
+@media (width <= 48rem) {
+  .payment-methods {
+    grid-template-columns: 1fr;
+  }
+
+  .payment-methods__card {
+    width: 100%;
+  }
+}

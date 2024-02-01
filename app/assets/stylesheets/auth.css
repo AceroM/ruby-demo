@@ -1,0 +1,30 @@
+.sign-in-as {
+  margin-top: 1rem;
+}
+
+.otp-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem !important;
+
+  & > input {
+    width: 100%;
+    border-radius: 0.25rem;
+    border: 1px solid var(--neutral-300);
+    transition: var(--border-shadow-transition);
+    outline: none;
+    text-align: center;
+    font-size: 1.8125rem;
+    font-weight: 500;
+
+    &:hover {
+      border: var(--brand-border);
+    }
+
+    &:focus {
+      border: var(--brand-border);
+      box-shadow: var(--brand-shadow);
+    }
+  }
+}

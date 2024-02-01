@@ -2,7 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 import { useTransition } from "src/use_transition"
 
 export default class extends Controller {
-  static targets = ["content", "focus", "overlay", "submit"]
+  static targets = ["content", "focus", "overlay"]
 
   initialize() {
     this.close = this.close.bind(this)
@@ -21,13 +21,13 @@ export default class extends Controller {
   }
 
   handleKeydown(event) {
-    debugger
     if (event.target.tagName === "INPUT") {
       return
     }
     if (event.key === "Escape") {
       this.close()
-    } if (!["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Tab", "Space", "Enter"].includes(event.key)) {
+    }
+    if (!["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Tab", "Space", "Enter"].includes(event.key)) {
       event.preventDefault()
     }
   }

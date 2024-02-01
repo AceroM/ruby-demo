@@ -1,0 +1,11 @@
+{
+  "ban_status": "ALLOWED",
+  "creation_time": "2024-01-31T03:51:00.649389Z",
+  "has_accounts": false,
+  "id": "fcca0a0b-3bd3-4c87-b3b0-fc4c468003a4",
+  "is_customer": true,
+  "last_updated_time": "2024-01-31T03:51:00.649389Z",
+  "status": "PROSPECT",
+  "tenant": "pnrqep_yowddy",
+  "verification_status": "UNVERIFIED"
+}

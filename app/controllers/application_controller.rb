@@ -43,6 +43,7 @@ class ApplicationController < ActionController::Base
   def authenticate_and_set_user!
     authenticate_user!
     if current_user
+      Rails.error.set_context(user_id: current_user.id, email: current_user.email)
       Current.user = current_user
       if Current.user.signed_tos_on < Date.new(2023, 4, 25)
         redirect_to edit_user_registration_path, alert: "You must accept the Terms of Service before continuing."

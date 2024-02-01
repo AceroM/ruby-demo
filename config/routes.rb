@@ -6,6 +6,7 @@ Rails.application.routes.draw do
     end
   end
   namespace :admin do
+    mount GoodJob::Engine => 'good_job'
     resources :errors, only: %i[index show update]
     resources :users do
       post "stop_impersonating", to: "users#stop_impersonating", on: :collection

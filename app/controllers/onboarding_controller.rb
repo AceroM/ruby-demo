@@ -24,9 +24,10 @@ class OnboardingController < ApplicationController
   end
 
   def update
+    debugger
     case @flow.step
     when "welcome"
-      unless OnboardingFlow.required_disclosures.all? { |d| params[d[:form_id]] == "1" }
+      unless OnboardingFlow::Disclosures.required.all? { |d| params[d[:form_id]] == "1" }
         return redirect_to onboarding_path(page: "welcome"), notice: "all not accepted"
       end
       client = Synctera::Client.new(user: Current.user)
@@ -35,15 +36,17 @@ class OnboardingController < ApplicationController
       else
         person = client.persons.create
         business = client.businesses.create
-        Current.user.create_synctera_person(platform_id: person["id"], data: person.except(:id))
-        Current.user.create_synctera_business(platform_id: business["id"], data: business.except(:id))
+        Current.user.create_synctera_person(platform_id: person["id"], data: person)
+        Current.user.create_synctera_business(platform_id: business["id"], data: business)
         user_disclosures = client.disclosures.list(type: "person")
       end
-      disclosures_to_accept = OnboardingFlow.required_disclosures.pluck(:type) - user_disclosures.pluck("type")
-      disclosures_to_accept.each do |disclosure|
-        client.disclosures.accept_person_disclosure(disclosure)
+      disclosures_to_accept = OnboardingFlow::Disclosures.required.pluck(:type) - user_disclosures.pluck("type")
+      if disclosures_to_accept.any?
+        disclosures_to_accept.each do |disclosure|
+          client.disclosures.accept_person_disclosure(disclosure)
+        end
+        Synctera::Disclosures.sync_all(Current.user)
       end
-      Synctera::Disclosures.sync_all(Current.user)
       @flow.update(accepted_disclosures: Time.current)
       redirect_to onboarding_path(page: "phone_number"), notice: "Disclosures accepted"
     when "phone_number"

@@ -1,0 +1,21 @@
+.subscription-plans {
+}
+
+.subscription-plans__item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1px solid var(--neutral-100);
+  border-radius: 0.625rem;
+  padding: 1rem;
+}
+
+.disclosures {
+  & > :not(:first-child) {
+    margin-top: 0.5rem;
+  }
+}
+
+.disclosures__item {
+  height: fit-content;
+}

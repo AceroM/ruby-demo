@@ -1,0 +1,18 @@
+.flash-buttons {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.admin-home {
+  > *:not(:first-child) {
+    margin-top: 1rem;
+  }
+}
+
+.admin-home__actions,
+.admin-home__users {
+  > *:not(:first-child) {
+    margin-top: 0.5rem;
+  }
+}

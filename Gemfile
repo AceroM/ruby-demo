@@ -49,7 +49,7 @@ gem "bootsnap", require: false
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
-  gem "debug", platforms: %i[ mri windows ]
+  gem "debug"
 end
 
 group :development do
@@ -80,11 +80,11 @@ gem "kredis", ">= 1.7.0"
 gem "kamal"
 
 group :development do
-  gem "byebug"
   gem "letter_opener_web"
   gem "faker"
   gem "rails_live_reload"
   gem "rubocop-rails-omakase"
+  gem "brakeman"
 end
 gem "devise"
 gem "pretender"

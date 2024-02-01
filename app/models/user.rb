@@ -8,7 +8,7 @@ class User < ApplicationRecord
   has_many :synctera_accounts, dependent: :destroy
   has_many :synctera_disclosures, dependent: :destroy
 
-  alias_attribute :disclosures, :synctera_disclosures
+  alias_method :disclosures, :synctera_disclosures
 
   devise :otp_authenticatable, :database_authenticatable, :registerable,
     :recoverable, :rememberable, :validatable, :lockable, :timeoutable, :confirmable, :trackable

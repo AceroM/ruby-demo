@@ -29,7 +29,7 @@
     <div class="create-password">
       <div class="create-password__form">
         <h2 class="heading-2">Create a new password</h2>
-        <%= form_with model: Current.user, url: account_password_path, local: true, method: "put", "data-controller": "passwords" do |f| %>
+        <%= form_with model: Current.user, url: account_password_path, local: true, method: "put", data: { controller: "passwords" } do |f| %>
           <div class="field">
             <%= f.label :current_password, "Current Password", class: "label" %>
             <div class="input-wrapper">

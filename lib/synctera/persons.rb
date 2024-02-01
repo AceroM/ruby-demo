@@ -10,7 +10,7 @@ module Synctera
         raise ConfigurationError, "User is required"
       end
     end
-    
+
     def get
       client.require_person
       client.get("/v0/persons/#{user.person_id}")
@@ -64,7 +64,7 @@ module Synctera
       end
       if (user.synctera_person.platform_last_updated_at != synctera_person["last_updated_time"]) || force_update
         puts "Person updated for user #{user.email}"
-        user.synctera_person.update(platform_last_updated_at: synctera_person["last_updated_time"], data: synctera_person.except(*excluded_keys))
+        user.synctera_person.update(data: synctera_person)
       else
         puts "No changes found for user #{user.email}"
       end
