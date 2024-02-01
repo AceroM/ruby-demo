@@ -10,12 +10,13 @@
     <p>To get started, please accept the following disclosures:</p>
     <div class="disclosures">
       <% OnboardingFlow::Disclosures.required.each do |disclosure| %>
-        <div class="field disclosures__item">
+        <div class="field disclosures__item" data-onboarding--welcome-target="container" data-action="click->onboarding--welcome#toggleChecked">
+          <% click_required = disclosure[:click_required].present? %>
           <%= f.label disclosure[:form_id], class: "checkbox", data: {
-            "onboarding--welcome-target": ("reference" if disclosure[:click_required].present?),
-            "visited": false, action: "click->onboarding--welcome#toggleVisited"
+            "onboarding--welcome-target": ("reference" if click_required),
+            "visited": (false if click_required), action: "click->onboarding--welcome#toggleVisited"
           } do %>
-            <%= f.check_box disclosure[:form_id] %>
+            <%= f.check_box disclosure[:form_id], "data-onboarding--welcome-target": "checkbox" %>
             <span>I agree to the <%= link_to disclosure[:title], disclosure[:url], class: "link", target: "_blank" %></span>
           <% end %>
           <% if disclosure[:click_required].present? %>
@@ -26,6 +27,6 @@
     </div>
   </div>
   <div class="card__footer">
-    <%= submit_tag "Accept", class: "button button--primary button--pad-sm" %>
+    <%= submit_tag "Accept", class: "button button--primary button--pad-sm", disabled: true, "data-onboarding--welcome-target": "submit" %>
   </div>
 <% end %>

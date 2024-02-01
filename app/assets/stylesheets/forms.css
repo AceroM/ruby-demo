@@ -98,6 +98,7 @@
 
 .input-wrapper__icon {
   background-color: var(--white);
+  border: none;
   padding: 0.25rem 0.2rem;
   margin: 0.1rem;
   gap: 0.5rem;
