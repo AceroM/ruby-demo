@@ -64,6 +64,7 @@ class OnboardingController < ApplicationController
         elsif verify_code_response.success? && verify_code_response.body["status"] == "pending"
           redirect_to onboarding_path(page: "phone_number"), alert: "Please wait a few seconds and try again."
         else
+          @flow.retry_phone_verification
           redirect_to onboarding_path(page: "phone_number"), alert: "An error occurred verifying your code. Please try again or contact support."
         end
       else
@@ -110,13 +111,6 @@ class OnboardingController < ApplicationController
         render "onboarding/address", status: :unprocessable_entity
       end
     when "business"
-      if @flow.business_type?
-      elsif !params[:business_type].present? || !params[:business_type].in?(%w[sole_proprietorship partnership corporation llc])
-        @flow.set_business_type(params[:business_type])
-        redirect_to onboarding_path(page: "business")
-      else
-        render "onboarding/business", status: :unprocessable_entity
-      end
     else
       redirect_to onboarding_path(page: "not_found")
     end

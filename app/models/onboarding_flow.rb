@@ -44,14 +44,4 @@ class OnboardingFlow < ApplicationRecord
   end
 
   alias_method :retry_phone_verification, :set_phone_verified
-
-  def business_type
-    Kredis.string("business_type:#{prefix_id}").value
-  end
-
-  alias_method :business_type?, :business_type
-
-  def set_business_type(business_type)
-    Kredis.string("business_type:#{prefix_id}").value = business_type
-  end
 end

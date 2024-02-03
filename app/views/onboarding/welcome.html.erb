@@ -10,17 +10,20 @@
     <p>To get started, please accept the following disclosures:</p>
     <div class="disclosures">
       <% OnboardingFlow::Disclosures.required.each do |disclosure| %>
-        <div class="field disclosures__item" data-onboarding--welcome-target="container" data-action="click->onboarding--welcome#toggleChecked">
-          <% click_required = disclosure[:click_required].present? %>
-          <%= f.label disclosure[:form_id], class: "checkbox", data: {
-            "onboarding--welcome-target": ("reference" if click_required),
-            "visited": (false if click_required), action: "click->onboarding--welcome#toggleVisited"
-          } do %>
-            <%= f.check_box disclosure[:form_id], "data-onboarding--welcome-target": "checkbox" %>
-            <span>I agree to the <%= link_to disclosure[:title], disclosure[:url], class: "link", target: "_blank" %></span>
+        <div class="field disclosures__item" data-onboarding--welcome-target="item">
+          <%= f.label disclosure[:form_id], class: "checkbox", "data-action": "change->onboarding--welcome#toggleChecked" do %>
+            <%= f.check_box disclosure[:form_id] %>
+            <span>I agree to the <%= link_to disclosure[:title], disclosure[:url], class: "link", target: "_blank", "data-action": "click->onboarding--welcome#visitLink" %></span>
           <% end %>
           <% if disclosure[:click_required].present? %>
-            <div data-onboarding--welcome-target="floating" class="d-none"></div>
+            <div class="floating d-none">
+              <div class="floating__content">
+                <p class="subtitle">Please read the following disclosure</p>
+                <svg height="12" viewBox="0 0 25 12" width="25" fill="var(--white)" class="floating__arrow">
+                  <path clip-rule="evenodd" d="M9.67157 9.17157C11.2337 10.7337 13.7663 10.7337 15.3284 9.17157L24.5 0L0.5 0L9.67157 9.17157Z"></path>
+                </svg>
+              </div>
+            </div>
           <% end %>
         </div>
       <% end %>

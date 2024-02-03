@@ -319,6 +319,19 @@
     color: var(--brand-200);
     box-shadow: var(--brand-shadow);
   }
+
+  &.link--danger {
+    color: var(--red-500);
+    text-decoration: underline;
+
+    &:hover {
+      color: var(--red-300);
+    }
+
+    &:focus {
+      color: var(--red-300);
+    }
+  }
 }
 
 .card {

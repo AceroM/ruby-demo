@@ -1,0 +1,30 @@
+{
+  "status": "pending",
+  "payee": null,
+  "date_updated": "2024-02-03T06:48:50Z",
+  "send_code_attempts": [
+    {
+      "attempt_sid": "VL2da88b69b6300254f9a059332ae4014e",
+      "channel": "sms",
+      "time": "2024-02-03T06:48:50.000Z"
+    }
+  ],
+  "account_sid": "ACd9cb22f168d5a7efa359c7f4802f07cb",
+  "to": "+13472244430",
+  "amount": null,
+  "valid": false,
+  "lookup": {
+    "carrier": {
+      "mobile_country_code": "311",
+      "type": "mobile",
+      "error_code": null,
+      "mobile_network_code": "180",
+      "name": "AT&T Wireless"
+    }
+  },
+  "url": "https://verify.twilio.com/v2/Services/VA1a641145beeacde33bfe96960be34fe7/Verifications/VE069a920a405c9100544a60ff11eecd82",
+  "sid": "VE069a920a405c9100544a60ff11eecd82",
+  "date_created": "2024-02-03T06:48:50Z",
+  "service_sid": "VA1a641145beeacde33bfe96960be34fe7",
+  "channel": "sms"
+}

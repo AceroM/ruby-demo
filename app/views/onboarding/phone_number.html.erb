@@ -16,15 +16,15 @@
       <% end %>
       <p>Please enter the confirmation code that has been texted to you:</p>
       <div class="field">
-        <%= f.label :code, "Confirmation Code", class: "label" %>
+        <%= f.label :code, "Confirmation Code", class: "label", placeholder: "" %>
         <div class="otp-container">
           <% (1..6).each do |idx| %>
             <input
               type="text"
               maxlength="1"
               id="otp-digit-<%= idx %>"
-              data-otp-target="otpField"
               <%= "autofocus" if idx == 1 %>
+              data-otp-target="otpField"
               data-action="keydown->otp#handleKeyDown keyup->otp#handleKeyUp input->otp#handleInput"/>
           <% end %>
         </div>

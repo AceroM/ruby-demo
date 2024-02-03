@@ -1,0 +1,14 @@
+<% title "Company Information" %>
+
+<%= form_with url: onboarding_path, method: :patch, class: "card content-grid__content" do |f| %>
+  <div class="card__header">
+    <h2 class="heading-2">Incorporated Business</h2>
+  </div>
+  <div class="card__body">
+    <p>foo</p>
+    <div class="field"></div>
+  </div>
+  <div class="card__footer">
+    <%= f.submit "Confirm", class: "button button--pad-sm" %>
+  </div>
+<% end %>
